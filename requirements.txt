@@ -1,0 +1,4 @@
+Flask
+httpx
+werkzeug
+gunicorn
