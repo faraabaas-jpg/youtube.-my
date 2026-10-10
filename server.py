@@ -7,8 +7,8 @@ import httpx
 app = Flask(__name__)
 
 # استخراج التوكن ومعرف الشات من متغيرات البيئة لضمان الأمان
-TOKEN = os.getenv('TELEGRAM_TOKEN', 'ضع_التوكن_الخاص_بك_هنا')
-CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', 'ضع_CHAT_ID_الخاص_بك_هنا')
+TOKEN = os.getenv('TELEGRAM_TOKEN','8619489316:AAGVG6IrKXWUFaleUS0KFh113d0U31CYL74')
+CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', '8797738653')
 
 @app.route('/')
 def index():
