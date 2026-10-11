@@ -417,7 +417,7 @@ function renderWatch(){
   const v=cur();
   const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
   $('#view').innerHTML=`<div class="watch"><div class="w-primary">
-    <div class="player"><iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="player"><iframe src="https://www.youtube.com/embed/${v.id}?autoplay=0&rel=0&playsinline=1" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
     <div class="yt-link-wrap"><a class="yt-link" href="${linkOf(v)}" target="_blank" rel="noopener">الفيديو لا يعمل؟ شاهده على يوتيوب ↗</a></div>
     <div id="wMeta"></div>
     <div id="wComments">
@@ -597,7 +597,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
+  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
   if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
 });
 
@@ -608,7 +608,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeModal();document.body.classList.remove('drawer-open','searching')}
 });
 
-$('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q'].value.trim();
+$('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
   searchFor(t);$('#q'].blur();
 });
 
