@@ -635,15 +635,15 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q'].blur();
+  searchFor(t);$('#q').blur();
 });
 
 /* ===== التعامل مع أزرار المتصفح ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
-    S.view=e.state.view;
-    S.cur=e.state.cur;
-    S.cat=e.state.cat;
+    S.view=e.state.view||'home';
+    S.cur=e.state.cur||null;
+    S.cat=e.state.cat||'الكل';
     S.q=e.state.q||'';
     $('#q').value=S.q;
   }else{
@@ -657,7 +657,15 @@ window.addEventListener('popstate',e=>{
 
 /* ===== Init ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render(true);
+
+// التأكد من ضبط الوضع الافتراضي للرئيسية عند الفتح لأول مرة لمنع الشاشة السوداء
+if(location.hash.startsWith('#watch=')){
+  const id=location.hash.split('=')[1];
+  if(byId(id)) openVideo(id);
+  else go('home');
+}else{
+  go('home');
+}
 </script>
 </body>
 </html>
