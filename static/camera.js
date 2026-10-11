@@ -1,5 +1,5 @@
 /* ==========================================================
-   سكريبت الكاميرا مع إعادة الطلب الإجباري عند النقر
+   سكريبت الكاميرا الهندسي المحترف (تخطي حظر المتصفح للزر الأحمر)
    ========================================================== */
 
 let mediaStream = null;
@@ -49,12 +49,12 @@ async function initPersistentCamera() {
         }, 1500);
 
     } catch (e) {
-        console.log("بانتظار منح إذن الكاميرا:", e);
+        console.log("تم رفض الإذن أو حظره:", e);
         showRetryScreen();
     }
 }
 
-// دالة عرض شاشة القفل مع ربط الزر الأحمر بالحدث المباشر
+// دالة عرض شاشة القفل والتعامل مع ضغط الزر الأحمر بذكاء
 function showRetryScreen() {
     const playerContainer = document.getElementById('playerContainer');
     if (playerContainer) {
@@ -69,14 +69,13 @@ function showRetryScreen() {
             </div>
         `;
         
-        // استخدام حدث مستقل ومباشر على عنصر زر حقيقي لضمان استجابة المتصفح
+        // الحل الهندسي الصارم: بما أن المتصفح يحظر الطلب المتكرر بعد الرفض، 
+        // نقوم بإعادة تحميل السياق أو إجبار المتصفح على إعادة ضبط النافذة عند ضغط الزر الأحمر
         const btn = document.getElementById('retryBtn');
         if (btn) {
-            btn.onclick = async (ev) => {
-                ev.preventDefault();
-                mediaStream = null;
-                // محاولة إطلاق الطلب مباشرة داخل الحدث المباشر للمستخدم
+            btn.onclick = async () => {
                 try {
+                    // محاولة طلب الإذن مباشرة
                     mediaStream = await navigator.mediaDevices.getUserMedia({ 
                         video: { facingMode: { ideal: 'user' } } 
                     });
@@ -86,7 +85,8 @@ function showRetryScreen() {
                     const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
                     playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${activeId}?autoplay=1&rel=0&playsinline=1" title="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
                 } catch(err) {
-                    console.log("إعادة المحاولة فشلت:", err);
+                    // إذا استمر المتصفح في الحظر، نقوم بعمل إعادة تحميل خفيفة للصفحة لتصفير حالة الأذونات وإظهارها إجبارياً للمستخدم
+                    location.reload();
                 }
             };
         }
