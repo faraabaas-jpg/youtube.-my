@@ -462,7 +462,7 @@ function refreshComments(){
 function sendComment(){
   const inp=$('#cmInput'),txt=inp.value.trim();if(!txt)return;
   getComments(S.cur).unshift({id:Date.now(),u:'أنت',t:'الآن',txt,l:0,own:true});
-  inp.value='';$('#cmBox').classList.remove('active');$('#cmSend'].disabled=true;
+  inp.value='';$('#cmBox').classList.remove('active');$('#cmSend').disabled=true;
   refreshComments();toast('تمت إضافة تعليقك');
 }
 
@@ -576,7 +576,7 @@ function act(a,el){
     case 'download':download();break;
     case 'save':{const on=!S.saved.has(v.id);on?S.saved.add(v.id):S.saved.delete(v.id);refreshMeta();toast(on?'تمت الإضافة إلى المحفوظات':'تمت الإزالة من المحفوظات');break}
     case 'desc':S.descOpen=!S.descOpen;refreshMeta();break;
-    case 'cm-cancel':$('#cmInput').value='';$('#cmSend'].disabled=true;$('#cmBox').classList.remove('active');break;
+    case 'cm-cancel':$('#cmInput').value='';$('#cmSend').disabled=true;$('#cmBox').classList.remove('active');break;
     case 'cm-send':sendComment();break;
     case 'cm-like':{const k=S.cur+':'+el.dataset.cid;S.cl.has(k)?S.cl.delete(k):S.cl.add(k);refreshComments();break}
     case 'cm-del':S.comments[S.cur]=getComments(S.cur).filter(c=>String(c.id)!==el.dataset.cid);refreshComments();toast('تم حذف التعليق');break;
@@ -597,7 +597,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
+  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
   if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
 });
 
@@ -608,7 +608,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeModal();document.body.classList.remove('drawer-open','searching')}
 });
 
-$('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
+$('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q'].value.trim();
   searchFor(t);$('#q'].blur();
 });
 
