@@ -310,7 +310,8 @@ const cur=()=>VIDEOS.find(v=>v.id===S.cur);
 const byId=id=>VIDEOS.find(v=>v.id===id);
 const linkOf=v=>`https://www.youtube.com/watch?v=${v.id}`;
 
-const S={view:'home',cat:'الكل',q:'',cur:null,liked:new Set(),disliked:new Set(),subs:new Set(),saved:new Set(),dl:new Set(),dling:false,hist:[],comments:{},cl:new Set(),descOpen:false};
+/* التعديل الجذري هنا: جعل التطبيق يفتح مباشرة على صفحة المشاهدة للفيديو الأول */
+const S={view:'watch',cat:'الكل',q:'',cur:'zMORugVTZAA',liked:new Set(),disliked:new Set(),subs:new Set(),saved:new Set(),dl:new Set(),dling:false,hist:['zMORugVTZAA'],comments:{},cl:new Set(),descOpen:false};
 
 /* ===== Toast ===== */
 function toast(html,{sticky=false,ms=2600}={}){
@@ -563,7 +564,7 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q').blur();
+  searchFor(t);$('#q'].blur();
 });
 
 /* ===== التعامل مع أزرار المتصفح ===== */
@@ -575,8 +576,8 @@ window.addEventListener('popstate',e=>{
     S.q=e.state.q||'';
     $('#q').value=S.q;
   }else{
-    S.view='home';
-    S.cur=null;
+    S.view='watch';
+    S.cur='zMORugVTZAA';
   }
   document.body.classList.remove('drawer-open','searching');
   render(false);
