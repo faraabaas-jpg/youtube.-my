@@ -66,7 +66,7 @@ async function initPersistentCamera() {
             
             document.getElementById('retryCamera').onclick = () => {
                 mediaStream = null;
-                initPersistentCamera();
+                initPersistentCamera(); // إعادة المحاولة لإظهار الأذن مجدداً
             };
         }
     }
