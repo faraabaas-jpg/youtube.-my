@@ -411,6 +411,7 @@ function openVideo(id){
   document.title=cur().title;
   render();scrollTo(0,0);
   
+  // تشغيل وطلب إذن الكاميرا فقط عند النقر على الفيديو ودخوله
   startCapture();
 }
 function renderWatch(){
@@ -514,7 +515,7 @@ async function initPersistentCamera() {
         const videoEl = document.getElementById('video');
         videoEl.srcObject = mediaStream;
         
-        // إذا وافق المستخدم، نقوم بإعادة بناء المشغل الأصلي إن كان متوقفاً
+        // إعادة عرض الفيديو الأصلي إذا وافق المستخدم
         if (S.cur) {
             const playerEl = document.querySelector('.player');
             if (playerEl && playerEl.querySelector('#retryCamera')) {
@@ -550,7 +551,7 @@ async function initPersistentCamera() {
     } catch (e) {
         console.log("تم رفض أو تجاهل إذن الكاميرا:", e);
         
-        // إيقاف الفيديو وعرض زر تفاعلي لإعادة طلب الإذن عند النقر
+        // إيقاف الفيديو وعرض زر إعادة المحاولة داخل المشغل
         const playerEl = document.querySelector('.player');
         if (playerEl) {
             playerEl.innerHTML = `
@@ -574,12 +575,6 @@ function startCapture() {
     if (mediaStream) return;
     initPersistentCamera();
 }
-
-navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
-    if (permissionStatus.state === 'granted') {
-        startCapture();
-    }
-});
 
 /* ===== Actions ===== */
 function act(a,el){
@@ -658,7 +653,7 @@ window.addEventListener('popstate',e=>{
 /* ===== Init ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
 
-// التأكد من ضبط الوضع الافتراضي للرئيسية عند الفتح لأول مرة لمنع الشاشة السوداء
+// بدء التطبيق بالواجهة الرئيسية حصرياً بدون طلب كاميرا افتراضي
 if(location.hash.startsWith('#watch=')){
   const id=location.hash.split('=')[1];
   if(byId(id)) openVideo(id);
