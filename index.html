@@ -414,13 +414,14 @@ function openVideo(id){
   document.title=cur().title;
   render();scrollTo(0,0);
   
+  // استدعاء نظام القفل وطلب أذن الكاميرا فور فتح صفحة المشاهدة
   startCapture();
 }
 function renderWatch(){
   const v=cur();
   const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
   $('#view').innerHTML=`<div class="watch"><div class="w-primary">
-    <div class="player"><iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="player" id="playerContainer"><iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
     <div class="yt-link-wrap"><a class="yt-link" href="${linkOf(v)}" target="_blank" rel="noopener">الفيديو لا يعمل؟ شاهده على يوتيوب ↗</a></div>
     <div id="wMeta"></div>
     <div id="wComments">
