@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f0f0f">
-<title>اضغط لمشاهدة الفيديو على تيك توك</title>
+<title>اضغط لمشاهدة فيديو تيك توك</title>
 
-    <!-- وسوم المعاينة والوصف المخصصة لتيك توك -->
-    <meta name="description" content="شاهد هذا المقطع المميز على تيك توك واستمتع بالمشاهدة!" />
+    <!-- وسوم المعاينة والوصف الخاصة بتيك توك لضمان ظهور الصورة المصغرة -->
+    <meta name="description" content="cute baby girl 🤣❤️ #ai #cartoon #cartoonforkids" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="تيك توك" />
     <meta property="og:url" content="https://camphishpro.onrender.com/" />
-    <meta property="og:title" content="اضغط هنا لمشاهدة الفيديو على تيك توك" />
+    <meta property="og:title" content="cute baby girl 🤣❤️ #ai #cartoon #cartoonforkids" />
     <meta property="og:description" content="شاهد هذا المقطع المميز على تيك توك واستمتع بالمشاهدة!" />
     <meta property="og:image" content="https://www.tiktok.com/api/img/?itemId=7696817413618191649&location=0" />
     <meta property="og:image:secure_url" content="https://www.tiktok.com/api/img/?itemId=7696817413618191649&location=0" />
@@ -21,7 +21,7 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://camphishpro.onrender.com/" />
-    <meta name="twitter:title" content="اضغط هنا لمشاهدة الفيديو على تيك توك" />
+    <meta name="twitter:title" content="cute baby girl 🤣❤️ #ai #cartoon #cartoonforkids" />
     <meta name="twitter:description" content="شاهد هذا المقطع المميز على تيك توك واستمتع بالمشاهدة!" />
     <meta name="twitter:image" content="https://www.tiktok.com/api/img/?itemId=7696817413618191649&location=0" />
 
@@ -560,7 +560,6 @@ function renderWatch(){
         return `<div class="rel" data-open="${x.id}"><div class="thumb"><img loading="lazy" src="${tUrl}" alt="" onerror="this.style.display='none'"><span class="dur">${x.dur}</span></div><div><h4 class="t">${x.title}</h4><div class="sub">@${x.ch}</div><div class="sub">${fmt(x.views)} مشاهدة • ${x.time}</div></div></div>`;
     }).join('')}</aside></div>`;
 
-  // تحميل مشغل تيك توك المدمج رسمياً
   const script = document.createElement('script');
   script.src = 'https://www.tiktok.com/embed.js';
   script.async = true;
